@@ -4,4 +4,9 @@
     <TargetProject>f712f2d6-c2d3-464a-b032-f2ddb3669f8d</TargetProject>
     <FriendlyName>Estimate</FriendlyName>
   </ProjectTarget>
+  <Reports>
+    <Report>
+      <Filename>C:\Users\huanght\AppData\Local\Temp\Estimate_20171223.vsp</Filename>
+    </Report>
+  </Reports>
 </ProfilingTarget>
