@@ -3,10 +3,43 @@
 #include <algorithm>
 #include <cstdlib>
 #include <functional>
+#include <random>
 
-MCTS::MCTS()
+//sum of weight should be 1.0
+int randomSelect(const vector<float> &weight)
+{
+	float s = 1.0f;
+	std::uniform_real<float>(0.0f, 1.0f);
+	for (int i = 0; i < weight.size(); i++)
+	{
+		s -= weight[i];
+		if (s < 0) return i;
+	}
+	ASSERT(false);
+	return 0;
+}
+int randomSelect(const BoardArray &weight, int count)
+{
+	float s = 1.0f;
+	std::uniform_real<float>(0.0f, 1.0f);
+	for (int i = 0; i < count; i++)
+	{
+		s -= weight[i];
+		if (s < 0) return i;
+	}
+	ASSERT(false);
+	return 0;
+}
+
+MCTS::MCTS(const Board &_board, int _col, int lastmove)
 {
 	tr = new Node[300000];
+	board = _board;
+	nowcol = _col;
+	tr[root].cnt = 0;
+	tr[root].fa = -1;
+	tr[root].sumv = 0;
+	tr[root].move = lastmove;
 }
 
 void MCTS::make_move(int move)
@@ -25,15 +58,9 @@ void MCTS::unmake_move(int move)
 	board(move) = 0;
 }
 
-void MCTS::solve(const Board &_board, int _col, int(&result)[BSIZE*BSIZE], int lastmove)
+void MCTS::solve(BoardArray &result)
 {
 	int rcnt = 2000;
-	board = _board;
-	nowcol = _col;
-	tr[root].cnt = 0;
-	tr[root].fa = -1;
-	tr[root].sumv = 0;
-	tr[root].move = lastmove;
 	for (int i = 0; i < rcnt; i++)
 	{
 		int cur = root;
@@ -46,9 +73,9 @@ void MCTS::solve(const Board &_board, int _col, int(&result)[BSIZE*BSIZE], int l
 			{
 				Val ucb;
 				if (tr[ch].cnt == 0)
-					ucb = UCBC*tr[ch].policy*sqrtf(tr[cur].cnt);
+					ucb = UCBC*tr[ch].policy*sqrtf((Val)tr[cur].cnt);
 				else
-					ucb = tr[ch].sumv / tr[ch].cnt + UCBC*tr[ch].policy*sqrtf(tr[cur].cnt) / (1 + tr[ch].cnt);
+					ucb = tr[ch].sumv / tr[ch].cnt + UCBC*tr[ch].policy*sqrtf((Val)tr[cur].cnt) / (1 + tr[ch].cnt);
 				if (ucb > maxv)
 				{
 					maxv = ucb;
@@ -91,7 +118,7 @@ Val MCTS::getValue()
 	return 0.0f;
 }
 
-void MCTS::getPolicy(int cur, Val result[BLSIZE])
+void MCTS::getPolicy(int cur, BoardArray &result)
 {
 	int x = tr[cur].move / 15, y = tr[cur].move % 15;
 	int availcnt = 0;
@@ -151,18 +178,53 @@ void MCTS::simulation_back(int cur)
 	}
 }
 
-Coord run(Board gameboard, int nowcol, Coord lastmove)
+void MCTS::solvePolicy(Val te)
+{
+	BoardArray v;
+	solve(v);
+	int dec;
+	//Tempearture change
+	//for ulitmate
+	if (te < 0.1)
+	{
+		int maxc; Val maxv=-FLOAT_INF;
+		for (int i = 0; i < BLSIZE; i++)
+			if (maxv < v[i])
+			{
+				maxc = i;
+				maxv = v[i];
+			}
+		for (int i = 0; i < BLSIZE; i++) v[i] = 0;
+		v[maxc] = 1;
+		dec = maxc;
+	}
+	else
+	{
+		Val sum = 0;
+		for (int i = 0; i < BLSIZE; i++)
+		{
+			v[i] = powf(v[i], te);
+			sum += v[i];
+		}
+		for (int i = 0; i < BLSIZE; i++)
+			v[i] /= sum;
+		dec = randomSelect(v, BLSIZE);
+	}
+	
+}
+
+Coord run(const Board &gameboard, int nowcol, Coord lastmove)
 {
 #if 0
 	int r = rand() % 225;
 	return { r / 15,r % 15 };
 #else
-	MCTS mcts;
-	int result[BLSIZE];
-	mcts.solve(gameboard, nowcol, result, lastmove.p());
+	MCTS mcts(gameboard,nowcol,lastmove.p());
+	float result[BLSIZE];
+	mcts.solve(result);
 	if (!inBorder(lastmove)) return { 7,7 };
 	//argmax
-	int maxc = 0, maxp = 0;
+	float maxc = 0, maxp = 0;
 	for (int i = 0; i < BLSIZE; i++)
 		if (result[i] > maxc)
 		{

@@ -5,10 +5,14 @@
 #include <vector>
 using std::vector;
 
+int randomSelect(const vector<float> &weight);
+
 typedef float Val;
 class MCTS
 {
 private:
+	typedef Val BoardArray[225];
+
 	const Val UCBC = 1.0f;
 	struct Node
 	{
@@ -32,11 +36,12 @@ private:
 	void make_move(int move);
 	void unmake_move(int move);
 public:
-	MCTS();
-	void solve(const Board &_board, int _col, int(&result)[BSIZE*BSIZE], int lastmove);
+	MCTS(const Board &_board, int _col, int lastmove);
+	void solve(BoardArray &result);
+	void solvePolicy(Val te);
 	//Val getEndVal();
 	Val getValue();
-	void getPolicy(int cur, Val result[BLSIZE]);
+	void getPolicy(int cur, BoardArray &result);
 	void expand(int cur);
 	void simulation_back(int cur);
 	~MCTS()
@@ -45,4 +50,4 @@ public:
 	}
 };
 
-Coord run(Board gameboard, int nowcol, Coord lastmove);
+Coord run(const Board &gameboard, int nowcol, Coord lastmove);

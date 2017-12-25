@@ -30,3 +30,5 @@ struct Board
 
 const int cx[8] = { -1,-1,-1,0,0,1,1,1 };
 const int cy[8] = { -1,0,1,-1,1,-1,0,1 };
+
+
