@@ -95,7 +95,7 @@ void MCTS::solve(BoardArray &result)
 	memset(result, 0, sizeof(result));
 	for (auto ch : tr[root].ch)
 	{
-		result[tr[ch].move] = tr[ch].cnt;
+		result[tr[ch].move] = (Val)tr[ch].cnt;
 		std::cout << tr[ch].move << ' ' << tr[ch].cnt << ' ' << tr[ch].sumv / tr[ch].cnt << '\n';
 	}
 }
@@ -224,7 +224,7 @@ Coord run(const Board &gameboard, int nowcol, Coord lastmove)
 	mcts.solve(result);
 	if (!inBorder(lastmove)) return { 7,7 };
 	//argmax
-	float maxc = 0, maxp = 0;
+	float maxc = 0; int maxp = 0;
 	for (int i = 0; i < BLSIZE; i++)
 		if (result[i] > maxc)
 		{

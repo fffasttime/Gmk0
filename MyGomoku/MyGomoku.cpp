@@ -6,7 +6,7 @@
 int main()
 {
 	minit();
-	while (1)
+	//while (1)
 	{
 		runGame();
 	}

@@ -2,6 +2,7 @@
 #include "ConsolePrt.h"
 #include "Search.h"
 #include <vector>
+#include "GameData.h"
 using std::vector;
 
 Board emptygameboard = {
@@ -68,15 +69,16 @@ int othercol(int col)
 
 void runGame()
 {
+	DataSeries<int> datas;
 	Board gameboard = emptygameboard;
 	gamestep = 0;
 	print(gameboard);
-	vector<Coord> history;
+	vector<int> history;
 	while (gamestep < BLSIZE)
 	{
 		Coord c;
 		if (nowcol == 1) c = getPlayerPos(gameboard);
-		else c = run(gameboard, nowcol, history.size()>0?history[history.size() - 1]:Coord(-1,-1));
+		else c = run(gameboard, nowcol, history.size()>0?Coord(history[history.size() - 1]):Coord(-1,-1));
 		if (gamestep == 3 && c.x == 14 && c.y == 14)
 		{
 			swap3(gameboard);
@@ -84,7 +86,7 @@ void runGame()
 		}
 		else
 			setPiece(gameboard, c, nowcol);
-		history.push_back(c);
+		history.push_back(c.p());
 		print(gameboard);
 		if (judgeWin(gameboard))
 		{
@@ -99,4 +101,6 @@ void runGame()
 		gamestep++;
 	}
 	printf("\nDRAW!");
+	//datas.dump(EposideData(history, nowcol));
+	//datas.writeString("gomoku.log");
 }

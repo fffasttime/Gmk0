@@ -11,9 +11,10 @@ struct EposideData
 	int z;
 
 	EposideData() = default;
-	EposideData(const std::vector<int> &_moves, int _z) :moves(_moves), z(_z)
+	EposideData(const std::vector<int> &_moves, int _z) :moves(_moves),z(_z)
 	{
-		stepcount = moves.size();
+		//moves.assign(_moves.begin(), _moves.end());
+		stepcount = (int)moves.size();
 	}
 	EposideData(const std::string &s)
 	{
@@ -77,10 +78,12 @@ struct EposideTrainingData
 	int z;
 
 	EposideTrainingData() = default;
-	EposideTrainingData(const std::vector<int> &_moves, const std::vector<StepPolicy> &_policy, int _z) :moves(_moves), policy(_policy), z(_z)
+	EposideTrainingData(const std::vector<int> &_moves, const std::vector<StepPolicy> &_policy, int _z):z(_z)
 	{
-		stepcount = moves.size();
-	}
+		policy.assign(_policy.begin(), _policy.end());
+		moves.assign(_moves.begin(), _moves.end());
+		stepcount = (int)moves.size();
+	}/*
 	EposideTrainingData(const std::string &s)
 	{
 		std::stringstream ss;
@@ -92,7 +95,7 @@ struct EposideTrainingData
 			moves.push_back(t);
 		}
 	}
-
+	
 	std::string toString()
 	{
 		std::stringstream ss;
@@ -147,47 +150,58 @@ struct EposideTrainingData
 	void writeString(std::ofstream &out)
 	{
 		out << toString() << ' ';
-	}
+	}*/
 };
 
 template<typename T>
 struct DataSeries
 {
 	typedef unsigned char ubyte;
-	int count;
+	int count=0;
 	std::vector<T> datas;
-	void writeByte(std::ofstream &out)
+	void dump(const T &t)
 	{
+		datas.push_back(t);
+		count++;
+	}
+	void writeByte(std::string filename)
+	{
+		std::ofstream out(filename, ios::byte);
 		out << (ubyte)count;
 		for (auto &data : datas)
 			data.writeByte(out);
 	}
-	void readByte(std::ifstream &in)
+	void readByte(std::string filename)
 	{
+		std::ifstream in(filename, ios::byte);
 		ubyte u1;
 		in >> u1;
 		count = u1;
+		if (!datas.empty()) datas.clear();
 		for (int i = 0; i < count; i++)
 		{
 			T data;
 			data.readByte(in);
-			datas.push_back(data);
+			//datas.push_back(data);
 		}
 	}
-	void readString(std::ifstream &in)
+	void writeString(std::string filename)
 	{
+		std::ofstream out(filename);
+		out << count << ' ';
+		for (auto &data : datas)
+			data.writeString(out);
+	}
+	void readString(std::string filename)
+	{
+		std::ifstream in(filename);
 		in >> count;
+		if (!datas.empty()) datas.clear();
 		for (int i = 0; i < count; i++)
 		{
 			T data;
 			data.readString(in);
-			datas.push_back(data);
+			//datas.push_back(data);
 		}
-	}
-	void writeString(std::ofstream &out)
-	{
-		out << count << ' ';
-		for (auto &data : datas)
-			data.writeString(out);
 	}
 };

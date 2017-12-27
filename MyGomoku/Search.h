@@ -5,15 +5,16 @@
 #include <vector>
 using std::vector;
 
-int randomSelect(const vector<float> &weight);
-
 typedef float Val;
+typedef Val BoardArray[225];
+int randomSelect(const vector<float> &weight);
+int randomSelect(const BoardArray &weight, int count);
+
 class MCTS
 {
 private:
-	typedef Val BoardArray[225];
 
-	const Val UCBC = 1.0f;
+	const Val UCBC = 2.8f;
 	struct Node
 	{
 		Val sumv,policy;
