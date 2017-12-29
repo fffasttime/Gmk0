@@ -4,25 +4,29 @@
 bool inBorder(Coord a);
 bool inBorder(int x, int y);
 
-struct Board
+template<typename T>
+struct BoardArray
 {
-	int m[BSIZE][BSIZE];
-	void clear();
-	int& operator()(Coord o)
+	T m[BLSIZE];
+	T& operator()(Coord o)
 	{
-		return m[o.x][o.y];
+		return m[o.p()];
 	}
-	int& Board::operator()(int x, int y)
+	T& operator()(int x, int y)
 	{
-		return m[x][y];
+		return m[x * BSIZE + y];
 	}
-	int& Board::operator()(int p)
+	T& operator[](int p)
 	{
-		return m[p/BSIZE][p%BSIZE];
+		return m[p];
 	}
 	void debug();
+	void clear();
 
 };
+
+typedef BoardArray<int> Board;
+typedef BoardArray<float> BoardWeight;
 
 //*
 
@@ -30,5 +34,4 @@ struct Board
 
 const int cx[8] = { -1,-1,-1,0,0,1,1,1 };
 const int cy[8] = { -1,0,1,-1,1,-1,0,1 };
-
 

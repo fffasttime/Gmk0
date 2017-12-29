@@ -2,15 +2,20 @@
 //
 #include "Game.h"
 #include "ConsolePrt.h"
+#include "RunPython.h"
 
 int main()
 {
-	minit();
+	PythonInstance pi;
+	pi.callScirpt("");
+
+	//minit();
 	//while (1)
 	{
-		runGame();
+		//runGame();
 	}
-	mexit();
+	//mexit();
+	getchar();
 	return 0;
 }
 

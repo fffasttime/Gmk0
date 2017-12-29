@@ -10,12 +10,17 @@ bool inBorder(int x, int y)
 	return x >= 0 && y >= 0 && x < BSIZE && y < BSIZE;
 }
 
-void Board::clear()
+void BoardArray<int>::clear()
 {
 	memset(m, 0, sizeof(m));
 }
 
-void Board::debug()
+void BoardArray<float>::clear()
+{
+	for (int i = 0; i < BLSIZE; i++)
+		m[i] = 0;
+}
+void BoardArray<int>::debug()
 {/*
 	for (int i = 0; i<BSIZE; i++)
 	{

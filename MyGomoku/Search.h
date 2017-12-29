@@ -6,9 +6,8 @@
 using std::vector;
 
 typedef float Val;
-typedef Val BoardArray[225];
 int randomSelect(const vector<float> &weight);
-int randomSelect(const BoardArray &weight, int count);
+int randomSelect(BoardWeight weight, int count);
 
 class MCTS
 {
@@ -38,11 +37,11 @@ private:
 	void unmake_move(int move);
 public:
 	MCTS(const Board &_board, int _col, int lastmove);
-	void solve(BoardArray &result);
+	void solve(BoardWeight &result);
 	void solvePolicy(Val te);
 	//Val getEndVal();
 	Val getValue();
-	void getPolicy(int cur, BoardArray &result);
+	void getPolicy(int cur, BoardWeight &result);
 	void expand(int cur);
 	void simulation_back(int cur);
 	~MCTS()

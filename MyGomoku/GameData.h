@@ -2,6 +2,7 @@
 
 #include "Utils.h"
 #include <vector>
+#include <array>
 
 struct EposideData
 {
@@ -71,7 +72,7 @@ struct EposideData
 struct EposideTrainingData
 {
 	typedef unsigned char ubyte;
-	typedef float StepPolicy[POLICY_MAX_EXPANDS];
+	typedef std::array<float, POLICY_MAX_EXPANDS> StepPolicy;
 	int stepcount;
 	std::vector<int> moves;
 	std::vector<StepPolicy> policy;
@@ -83,7 +84,7 @@ struct EposideTrainingData
 		policy.assign(_policy.begin(), _policy.end());
 		moves.assign(_moves.begin(), _moves.end());
 		stepcount = (int)moves.size();
-	}/*
+	}
 	EposideTrainingData(const std::string &s)
 	{
 		std::stringstream ss;
@@ -150,7 +151,7 @@ struct EposideTrainingData
 	void writeString(std::ofstream &out)
 	{
 		out << toString() << ' ';
-	}*/
+	}
 };
 
 template<typename T>
