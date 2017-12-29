@@ -9,6 +9,7 @@ struct EposideData
 	typedef unsigned char ubyte;
 	int stepcount;
 	std::vector<int> moves;
+	//winner
 	int z;
 
 	EposideData() = default;
@@ -34,7 +35,7 @@ struct EposideData
 		std::stringstream ss;
 		ss << stepcount << ' ' << z;
 		for (auto move : moves) ss << ' '<< move;
-		std::string s; ss >> s;
+		std::string s; std::getline(ss, s);
 		return s;
 	}
 	void writeByte(std::ofstream &out)
@@ -107,7 +108,7 @@ struct EposideTrainingData
 			for (int j = 0; j < POLICY_MAX_EXPANDS; j++)
 				ss << ' '<< policy[i][j];
 		}
-		std::string s; ss >> s;
+		std::string s; std::getline(ss,s);
 		return s;
 	}
 	void writeByte(std::ofstream &out)
@@ -183,7 +184,7 @@ struct DataSeries
 		{
 			T data;
 			data.readByte(in);
-			//datas.push_back(data);
+			datas.push_back(data);
 		}
 	}
 	void writeString(std::string filename)
@@ -202,7 +203,7 @@ struct DataSeries
 		{
 			T data;
 			data.readString(in);
-			//datas.push_back(data);
+			datas.push_back(data);
 		}
 	}
 };

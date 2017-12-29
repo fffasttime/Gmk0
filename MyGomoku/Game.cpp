@@ -3,6 +3,7 @@
 #include "Search.h"
 #include <vector>
 #include "GameData.h"
+#include <Windows.h>
 using std::vector;
 
 Board emptygameboard = {
@@ -69,7 +70,7 @@ int othercol(int col)
 
 void runGame()
 {
-	DataSeries<int> datas;
+	DataSeries<EposideData> datas;
 	Board gameboard = emptygameboard;
 	gamestep = 0;
 	print(gameboard);
@@ -79,13 +80,14 @@ void runGame()
 		Coord c;
 		if (nowcol == 1) c = getPlayerPos(gameboard);
 		else c = run(gameboard, nowcol, history.size()>0?Coord(history[history.size() - 1]):Coord(-1,-1));
+		/*
 		if (gamestep == 3 && c.x == 14 && c.y == 14)
 		{
 			swap3(gameboard);
 			gamestep--;
 		}
-		else
-			setPiece(gameboard, c, nowcol);
+		else*/
+		setPiece(gameboard, c, nowcol);
 		history.push_back(c.p());
 		print(gameboard);
 		if (judgeWin(gameboard))
@@ -94,13 +96,41 @@ void runGame()
 				printf("\nWhite win!");
 			else
 				printf("\nBlack win!");
-			return;
+			break;
 		}
 		nowcol = othercol(nowcol);
 		//Sleep(500);
 		gamestep++;
 	}
 	printf("\nDRAW!");
-	//datas.dump(EposideData(history, nowcol));
-	//datas.writeString("gomoku.log");
+	datas.dump(EposideData(history, nowcol));
+	datas.writeString("gomoku.log");
+}
+
+void runRecord(const vector<int> &moves)
+{
+	Board gameboard = emptygameboard;
+	gamestep = 0;
+	print(gameboard);
+	for (auto move : moves)
+	{
+		Coord c(move);
+		setPiece(gameboard, c, nowcol);
+
+		print(gameboard);
+		Sleep(500);
+
+		nowcol = othercol(nowcol);
+		gamestep++;
+	}
+}
+
+void runFromFile(string filename)
+{
+	DataSeries<EposideData> datas;
+	datas.readString(filename);
+	for (auto &data : datas.datas)
+	{
+		runRecord(data.moves);
+	}
 }

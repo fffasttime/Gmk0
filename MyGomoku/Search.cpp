@@ -96,7 +96,7 @@ void MCTS::solve(BoardWeight &result)
 	for (auto ch : tr[root].ch)
 	{
 		result[tr[ch].move] = (Val)tr[ch].cnt;
-		std::cout << tr[ch].move << ' ' << tr[ch].cnt << ' ' << tr[ch].sumv / tr[ch].cnt << '\n';
+		//std::cout << tr[ch].move << ' ' << tr[ch].cnt << ' ' << tr[ch].sumv / tr[ch].cnt << '\n';
 	}
 }
 #if 0
@@ -162,6 +162,7 @@ void MCTS::simulation_back(int cur)
 		val = getValue();
 		if (judgeWin(board) == 0)
 			expand(cur);
+
 	}
 	else
 		val = getValue();
