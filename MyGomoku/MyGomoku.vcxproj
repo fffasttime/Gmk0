@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="ConsolePrt.h" />
+    <ClInclude Include="Evaluation.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="RunPython.h" />
@@ -167,6 +168,7 @@
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="ConsolePrt.cpp" />
+    <ClCompile Include="Evaluation.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="MyGomoku.cpp" />
     <ClCompile Include="RunPython.cpp" />

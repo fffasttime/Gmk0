@@ -43,3 +43,6 @@ mini_batch
   int count
   GameTrainData[count]
 
+12-30
+  target: conv->res
+  +bn, +dual 

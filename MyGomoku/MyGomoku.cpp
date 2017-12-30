@@ -6,17 +6,16 @@
 
 int main()
 {
-	//PythonInstance pi;
-	//pi.callScirpt("");
+	PythonInstance pi;
+	pi.callScirpt("Estimate");
 
-	minit();
+	//minit();
 	//while (1)
 	{
 		//runGame();
 	}
-	runFromFile("gomoku.log");
-	mexit();
+	//runFromFile("gomoku.log");
+	//mexit();
 	getchar();
 	return 0;
 }
-
