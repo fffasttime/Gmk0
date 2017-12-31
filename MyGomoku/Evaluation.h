@@ -16,3 +16,4 @@ struct RawOutput
 	float p[BSIZE][BSIZE];
 };
 
+void getEvaluation();

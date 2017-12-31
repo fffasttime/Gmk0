@@ -31,4 +31,5 @@ public:
 	}
 	void loadPackage(string packname);
 	void loadFunction(string packname, string funcname);
+	PyObject *getFunc(string funcname);
 };

@@ -21,23 +21,31 @@ void PythonInstance::loadPackage(string packname)
 		cout << "[ERROR] Python get module failed.\n";
 		return;
 	}
-	cout << "[INFO] Python get module succeed.\n";
-
+	packages[packname] = pModule;
+	//cout << "[INFO] Python get module succeed.\n";
 }
 
 void PythonInstance::loadFunction(string packname, string funcname)
 {
 	using std::cout;
-	auto pModule = packages[packages];
+	auto pModule = packages[packname];
 	// 加载函数
-	PyObject* pv = PyObject_GetAttrString(pModule, "test_add");
+	PyObject* pv = PyObject_GetAttrString(pModule, funcname.c_str());
 	if (!pv || !PyCallable_Check(pv))  // 验证是否加载成功
 	{
-		cout << "[ERROR] Can't find function (test_add)\n";
+		cout << "[ERROR] Can't find function " <<funcname <<"\n";
 		return;
 	}
-	cout << "[INFO] Get function (test_add) succeed.\n";
+	//cout << "[INFO] Get function (test_add) succeed.\n";
+}
 
+PyObject *PythonInstance::getFunc(string funcname)
+{
+	return functions[funcname];
+}
+
+void testCall()
+{
 	// 设置参数
 	PyObject* args = PyTuple_New(2);   // 2个参数
 	PyObject* arg1 = Py_BuildValue("i", 4);    // 参数一设为4
@@ -53,6 +61,6 @@ void PythonInstance::loadFunction(string packname, string funcname)
 	{
 		int result, r2 = 0;
 		PyArg_ParseTuple(pRet, "(i)", &result);
-		cout << "result:" << result << ' ' << r2;
+		std::cout << "result:" << result << ' ' << r2;
 	}
 }

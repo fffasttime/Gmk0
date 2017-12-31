@@ -1,7 +1,6 @@
 #include "Evaluation.h"
 #include "RunPython.h"
 
-
 RawInput::RawInput(Board &board)
 {
 	for (int i = 0; i < BSIZE; i++)
@@ -23,3 +22,9 @@ RawInput::RawInput(Board &board)
 			}
 }
 
+void getEvaluation()
+{
+	auto py = PythonInstance::getInstance();
+	auto fun = py->getFunc("forward");
+
+}
