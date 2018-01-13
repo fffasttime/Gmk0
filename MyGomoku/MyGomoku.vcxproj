@@ -77,7 +77,7 @@
     <LinkIncremental>true</LinkIncremental>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <IncludePath>C:\Users\huanght\AppData\Local\Programs\Python\Python36\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\huanght\AppData\Local\Programs\Python\Python36\include;C:\Users\huanght\AppData\Local\Programs\Python\Python36\Lib\site-packages\numpy\core\include\numpy;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\huanght\AppData\Local\Programs\Python\Python36\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

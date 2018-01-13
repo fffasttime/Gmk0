@@ -6,14 +6,14 @@
 struct RawInput
 {
 	//color w, color b
-	float feature[BSIZE][BSIZE][2];
+	float feature[2][BLSIZE];
 	RawInput(Board &board);
 };
 
 struct RawOutput
 {
+	float p[BLSIZE];
 	float v;
-	float p[BSIZE][BSIZE];
 };
 
-void getEvaluation();
+void getEvaluation(Board &board, RawOutput &output);

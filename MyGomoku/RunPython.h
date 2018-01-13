@@ -19,17 +19,15 @@ public:
 		return instance;
 	}
 
-	PythonInstance()
-	{
-		assert(!created);
-		instance = this;
-		Py_Initialize();
-	}
+	PythonInstance();
 	~PythonInstance()
 	{
 		Py_Finalize();
 	}
+	int initNumpy();
 	void loadPackage(string packname);
 	void loadFunction(string packname, string funcname);
 	PyObject *getFunc(string funcname);
 };
+
+void testCall();

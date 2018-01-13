@@ -1,7 +1,10 @@
+import time
+print(time.clock())
 import tensorflow as tf
 import numpy as np
+import os
 
-def weight_varible(shape):
+def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
     return tf.Variable(initial)
 
@@ -9,8 +12,13 @@ def bias_variable(shape):
     initial = tf.constant(0.0, shape=shape)
     return tf.Variable(initial)
 
+def bn_bias_variable(shape):
+    initial = tf.constant(0.0, shape=shape)
+    return tf.Variable(initial, trainable=False)
+
 def conv2d(x, W):
-    return tf.nn.conv2d(x, W, strides=[1,1,1,1], padding='SAME')
+    return tf.nn.conv2d(x, W, data_format='NCHW',
+                        strides=[1, 1, 1, 1], padding='SAME')
 
 #Now max_pooling is not useful
 def max_pool(x):
@@ -19,7 +27,7 @@ def max_pool(x):
 BSIZE = 15
 
 class TFProcess:
-    def __init__(self, next_batch):
+    def __init__(self):
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
         config = tf.ConfigProto(gpu_options=gpu_options)
         self.session = tf.Session(config=config)
@@ -28,15 +36,21 @@ class TFProcess:
         self.weights = []
 
         # TF variables
-        self.next_batch = next_batch
+        #self.next_batch = next_batch
         self.global_step = tf.Variable(0, name='global_step', trainable=False)
-        self.x = next_batch[0]  # tf.placeholder(tf.float32, [None, 18, BSIZE * BSIZE])
-        self.y_ = next_batch[1] # tf.placeholder(tf.float32, [None, BSIZE*BSIZE])
-        self.z_ = next_batch[2] # tf.placeholder(tf.float32, [None, 1])
+        '''
+        self.x = next_batch[0] 
+        self.y_ = next_batch[1]
+        self.z_ = next_batch[2]
+        '''
+        self.x = tf.placeholder(tf.float32, [None, 2, BSIZE * BSIZE])
+        self.y_ =tf.placeholder(tf.float32, [None, BSIZE*BSIZE])
+        self.z_ =tf.placeholder(tf.float32, [None, 1])
+
         self.training = tf.placeholder(tf.bool)
         self.batch_norm_count = 0
         self.y_conv, self.z_conv = self.construct_net(self.x)
-
+        '''
         # Calculate loss on policy head
         cross_entropy = \
             tf.nn.softmax_cross_entropy_with_logits(labels=self.y_,
@@ -78,14 +92,26 @@ class TFProcess:
         self.train_writer = tf.summary.FileWriter(
             os.path.join(os.getcwd(), "logs/train"), self.session.graph)
 
+        '''
         self.init = tf.global_variables_initializer()
         self.saver = tf.train.Saver()
-
         self.session.run(self.init)
 
     def restore(self, file):
         print("Restoring from {0}".format(file))
         self.saver.restore(self.session, file)
+
+    def forward(self):
+        start=time.clock()
+        print(time.clock())
+        for i in range(200):
+            input=np.zeros([1,2,BSIZE*BSIZE])
+            y,z=self.session.run([self.y_conv, self.z_conv],feed_dict={self.x:input, self.training:False});
+        print(time.clock()-start)
+        print(type(y),type(z))
+        return y,z
+        #print(y)
+        #print(z)
 
     def process(self, batch_size):
         # Run training for this batch
@@ -144,9 +170,9 @@ class TFProcess:
             path = os.path.join(os.getcwd(), "leelaz-model")
             save_path = self.saver.save(self.session, path, global_step=steps)
             print("Model saved in file: {}".format(save_path))
-            leela_path = path + ".txt"
-            self.save_leelaz_weights(leela_path)
-            print("Leela weights saved to {}".format(leela_path))
+            # leela_path = path + ".txt"
+            # self.save_leelaz_weights(leela_path)
+            # print("Weights saved to {}".format(leela_path))
 
     def save_weights(self, filename):
         with open(filename, "w") as file:
@@ -256,12 +282,12 @@ class TFProcess:
         RESIDUAL_BLOCKS = 5
 
         # NCHW format
-        # batch, 18 channels, 19 x 19
+        # batch, 2 channels, 15 x 15
         x_planes = tf.reshape(planes, [-1, 2, BSIZE, BSIZE])
 
         # Input convolution
         flow = self.conv_block(x_planes, filter_size=3,
-                               input_channels=18,
+                               input_channels=2,
                                output_channels=RESIDUAL_FILTERS)
         # Residual tower
         for _ in range(0, RESIDUAL_BLOCKS):
@@ -295,3 +321,7 @@ class TFProcess:
         h_fc3 = tf.nn.tanh(tf.add(tf.matmul(h_fc2, W_fc3), b_fc3))
 
         return h_fc1, h_fc3
+
+print(time.clock())
+inst=TFProcess()
+inst.forward()

@@ -3,12 +3,15 @@
 #include "Game.h"
 #include "ConsolePrt.h"
 #include "RunPython.h"
+#include "Evaluation.h"
 
 int main()
 {
 	PythonInstance pi;
-	pi.callScirpt("Estimate");
-
+	pi.loadPackage("Estimate");
+	pi.loadFunction("Estimate", "nptest");
+//	testCall();
+	getEvaluation();
 	//minit();
 	//while (1)
 	{
