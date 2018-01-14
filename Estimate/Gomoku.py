@@ -3,10 +3,12 @@ import numpy as np
 import random
 import ctypes
 import operator
+from math import sqrt
 from io import *
 
 BSIZE=15
 BLSIZE=BSIZE*BSIZE
+puct=1.4
 
 print("[Info] Loading nn module")
 from nn import TFProcess
@@ -17,7 +19,7 @@ def inborder(dx, dy):
     return dx>=0 and dy >=0 and dx <BSIZE and dy<BSIZE
 
 class MCTS:
-    run_cnt=1;
+    run_cnt=800;
     
     def run(self,_board, _nowcol):
         self.board=_board
@@ -33,9 +35,10 @@ class MCTS:
                 for ch in self.node[nnode][2]:
                     ucb=0
                     if self.node[ch][0]==0:
-                        ucb=self.node[ch][4]
+                        ucb=puct*self.node[ch][4]*sqrt(self.node[nnode][0])
                     else:
-                        ucb=self.node[ch][1]/self.node[ch][0] + self.node[ch][4]/ (self.node[ch][0]+1)
+                        ucb=self.node[ch][1]/self.node[ch][0] + \
+                            puct*self.node[ch][4]*sqrt(self.node[nnode][0]/(self.node[ch][0]+1))
                     if ucb>maxv:
                         maxv=ucb
                         maxc=ch
@@ -123,8 +126,6 @@ class MCTS:
     
     def simulation_back(self, fa):
         probs,value=self.run_net()
-        print(probs)
-        print(value)
         rcc=BLSIZE
         plist=sorted(enumerate(probs), key=operator.itemgetter(1),reverse=True)
         #value=self.get_value()
