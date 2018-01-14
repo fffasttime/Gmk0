@@ -2,6 +2,7 @@
 
 #include "Utils.h"
 #include "Board.h"
+#include "Evaluation.h"
 #include <vector>
 using std::vector;
 
@@ -42,7 +43,7 @@ public:
 	//Val getEndVal();
 	Val getValue();
 	void getPolicy(int cur, BoardWeight &result);
-	void expand(int cur);
+	void expand(int cur,const RawOutput &output);
 	void simulation_back(int cur);
 	~MCTS()
 	{

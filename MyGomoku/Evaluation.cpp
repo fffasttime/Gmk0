@@ -1,7 +1,7 @@
 #include "Evaluation.h"
 #include "RunPython.h"
 #include "arrayobject.h"
-
+#include <Windows.h>
 int initNumpy()
 {
 	import_array();
@@ -41,6 +41,7 @@ void getEvaluation(Board &board, RawOutput &output)
 	PyTuple_SetItem(args, 0, PyArray);
 
 	auto pRet = PyObject_CallObject(fun, args);
+	Sleep(1000);
 	PyArrayObject *p1, *p2;
 	PyArg_ParseTuple(pRet, "OO", &p1, &p2);
 	using std::cout;
@@ -48,15 +49,18 @@ void getEvaluation(Board &board, RawOutput &output)
 	PyArrayIterObject *pit1, *pit2;
 	pit1 = (PyArrayIterObject *)PyArray_IterNew((PyObject *)p1);
 	pit2 = (PyArrayIterObject *)PyArray_IterNew((PyObject *)p2);
-	for (; pit1->index < pit1->size; )
+	for (int i=0; pit1->index < pit1->size; i++)
 	{
-		cout << *(float *)(pit1->dataptr)<<' ';
+		output.p[i] = *(float *)pit1->dataptr;
 		PyArray_ITER_NEXT(pit1);
 	}
-	cout << '\n';
 	for (; pit2->index < pit2->size; )
 	{
-		cout << *(float *)(pit2->dataptr);
+		output.v = *(float *)pit1->dataptr;
 		PyArray_ITER_NEXT(pit2);
 	}
+	Py_DECREF(args);
+	Py_DECREF(p1);
+	Py_DECREF(p2);
+	Py_DECREF(pRet);
 }

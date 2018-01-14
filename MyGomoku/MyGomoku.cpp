@@ -13,14 +13,14 @@ int main()
 	initNumpy();
 //	testCall();
 	Board board; RawOutput output; board.clear();
-	getEvaluation(board, output);
-	//minit();
-	//while (1)
+	//getEvaluation(board, output);
+	minit();
+	while (1)
 	{
-		//runGame();
+		runGame();
 	}
-	//runFromFile("gomoku.log");
-	//mexit();
+	runFromFile("gomoku.log");
+	mexit();
 	getchar();
 	return 0;
 }

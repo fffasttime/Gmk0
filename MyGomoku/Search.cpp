@@ -60,7 +60,7 @@ void MCTS::unmake_move(int move)
 
 void MCTS::solve(BoardWeight &result)
 {
-	int rcnt = 2000;
+	int rcnt = 1;
 	for (int i = 0; i < rcnt; i++)
 	{
 		int cur = root;
@@ -134,17 +134,17 @@ void MCTS::getPolicy(int cur, BoardWeight &result)
 				result[i * 15 + j] = 1.0f / availcnt;
 }
 
-void MCTS::expand(int cur)
+void MCTS::expand(int cur,const RawOutput &output)
 {
-	BoardWeight prob;
-	getPolicy(cur, prob);
+	//BoardWeight prob;
+	//getPolicy(cur, prob);
 	for (int i = 0; i < BLSIZE; i++)
-		if (prob[i] > 1e-3)
+		if (output.p[i] > 1e-3)
 		{
 			tr[cur].ch.push_back(trcnt);
 			tr[trcnt].sumv = 0;
 			tr[trcnt].cnt = 0;
-			tr[trcnt].policy = prob[i];
+			tr[trcnt].policy = output.p[i];
 			tr[trcnt].move = i;
 			if (!tr[trcnt].ch.empty())
 				tr[trcnt].ch.clear();
@@ -159,9 +159,12 @@ void MCTS::simulation_back(int cur)
 	Val val;
 	if (tr[cur].cnt == 0)
 	{
-		val = getValue();
+		//val = getValue();
+		RawOutput result;
+		getEvaluation(board, result);
+		val = result.v;
 		if (judgeWin(board) == 0)
-			expand(cur);
+			expand(cur, result);
 
 	}
 	else
@@ -220,10 +223,10 @@ Coord run(const Board &gameboard, int nowcol, Coord lastmove)
 	int r = rand() % 225;
 	return { r / 15,r % 15 };
 #else
+	if (!inBorder(lastmove)) return { 7,7 };
 	MCTS mcts(gameboard,nowcol,lastmove.p());
 	BoardWeight result;
 	mcts.solve(result);
-	if (!inBorder(lastmove)) return { 7,7 };
 	//argmax
 	float maxc = 0; int maxp = 0;
 	for (int i = 0; i < BLSIZE; i++)
