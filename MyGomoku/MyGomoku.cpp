@@ -10,8 +10,10 @@ int main()
 	PythonInstance pi;
 	pi.loadPackage("Estimate");
 	pi.loadFunction("Estimate", "nptest");
+	initNumpy();
 //	testCall();
-	getEvaluation();
+	Board board; RawOutput output; board.clear();
+	getEvaluation(board, output);
 	//minit();
 	//while (1)
 	{

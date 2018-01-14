@@ -2,6 +2,12 @@
 #include "RunPython.h"
 #include "arrayobject.h"
 
+int initNumpy()
+{
+	import_array();
+	return 1;//SUCCESS
+}
+
 RawInput::RawInput(Board &board)
 {
 	for (int i = 0; i < BLSIZE; i++)
@@ -25,8 +31,6 @@ RawInput::RawInput(Board &board)
 void getEvaluation(Board &board, RawOutput &output)
 {
 	auto py = PythonInstance::getInstance();
-	//py->initNumpy();
-	_import_array();
 	auto fun = py->getFunc("nptest");
 
 	auto input = RawInput(board);
@@ -40,13 +44,13 @@ void getEvaluation(Board &board, RawOutput &output)
 	PyArrayObject *p1, *p2;
 	PyArg_ParseTuple(pRet, "OO", &p1, &p2);
 	using std::cout;
-
+	
 	PyArrayIterObject *pit1, *pit2;
 	pit1 = (PyArrayIterObject *)PyArray_IterNew((PyObject *)p1);
 	pit2 = (PyArrayIterObject *)PyArray_IterNew((PyObject *)p2);
 	for (; pit1->index < pit1->size; )
 	{
-		cout << *(float *)(pit1->dataptr);
+		cout << *(float *)(pit1->dataptr)<<' ';
 		PyArray_ITER_NEXT(pit1);
 	}
 	cout << '\n';

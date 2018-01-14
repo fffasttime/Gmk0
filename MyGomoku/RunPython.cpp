@@ -16,18 +16,19 @@ PythonInstance::PythonInstance()
 	instance = this;
 	Py_Initialize();
 	//if (!initNumpy()) std::cout<<"[ERROR] Fail loading numpy.\n";
+//change path
+#if 1
+	string chdir_cmd = string("sys.path.append('./')");
+	const char* cstr_cmd = chdir_cmd.c_str();
+	PyRun_SimpleString("import sys");
+	PyRun_SimpleString(cstr_cmd);
+#endif
+	PyRun_SimpleString("import tensorflow as tf");
 }
 
 void PythonInstance::loadPackage(string packname)
 {
 	using std::cout;
-//change path
-#if 0
-	string chdir_cmd = string("sys.path.append(\"") + localpath + "\")";
-	const char* cstr_cmd = chdir_cmd.c_str();
-	PyRun_SimpleString("import sys");
-	PyRun_SimpleString(cstr_cmd);
-#endif
 	// 加载模块
 	PyObject* moduleName = Py_BuildValue("s", packname.c_str()); //模块名，不是文件名
 	PyObject* pModule = PyImport_Import(moduleName);

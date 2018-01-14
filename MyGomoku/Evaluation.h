@@ -16,4 +16,5 @@ struct RawOutput
 	float v;
 };
 
+int initNumpy();
 void getEvaluation(Board &board, RawOutput &output);

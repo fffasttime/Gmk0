@@ -1,5 +1,3 @@
-import time
-print(time.clock())
 import tensorflow as tf
 import numpy as np
 import os
@@ -50,6 +48,7 @@ class TFProcess:
         self.training = tf.placeholder(tf.bool)
         self.batch_norm_count = 0
         self.y_conv, self.z_conv = self.construct_net(self.x)
+        self.y_policy=tf.nn.softmax(self.y_conv)
         '''
         # Calculate loss on policy head
         cross_entropy = \
@@ -101,18 +100,10 @@ class TFProcess:
         print("Restoring from {0}".format(file))
         self.saver.restore(self.session, file)
 
-    def forward(self):
-        start=time.clock()
-        print(time.clock())
-        for i in range(200):
-            input=np.zeros([1,2,BSIZE*BSIZE])
-            y,z=self.session.run([self.y_conv, self.z_conv],feed_dict={self.x:input, self.training:False});
-        print(time.clock()-start)
-        print(type(y),type(z))
+    def forward(self, input):
+        y,z=self.session.run([self.y_policy, self.z_conv],feed_dict={self.x:input.reshape([1,2,BSIZE*BSIZE]), self.training:False});
         return y,z
-        #print(y)
-        #print(z)
-
+    
     def process(self, batch_size):
         # Run training for this batch
         policy_loss, mse_loss, _, _ = self.session.run(
@@ -321,7 +312,3 @@ class TFProcess:
         h_fc3 = tf.nn.tanh(tf.add(tf.matmul(h_fc2, W_fc3), b_fc3))
 
         return h_fc1, h_fc3
-
-print(time.clock())
-inst=TFProcess()
-inst.forward()
