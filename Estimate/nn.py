@@ -1,6 +1,7 @@
-import tensorflow as tf
 import numpy as np
 import os
+import tensorflow as tf
+print("[Info] Tensorflow loaded")
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
