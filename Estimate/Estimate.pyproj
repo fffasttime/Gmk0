@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>f712f2d6-c2d3-464a-b032-f2ddb3669f8d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Estimate.py</StartupFile>
+    <StartupFile>Main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,6 +22,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Estimate.py" />
+    <Compile Include="Gomoku.py" />
+    <Compile Include="Main.py" />
     <Compile Include="nn.py">
       <SubType>Code</SubType>
     </Compile>

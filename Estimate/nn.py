@@ -50,7 +50,11 @@ class TFProcess:
         self.batch_norm_count = 0
         self.y_conv, self.z_conv = self.construct_net(self.x)
         self.y_policy=tf.nn.softmax(self.y_conv)
-        '''
+        
+        self.init = tf.global_variables_initializer()
+        self.session.run(self.init)
+        
+    def initraining()
         # Calculate loss on policy head
         cross_entropy = \
             tf.nn.softmax_cross_entropy_with_logits(labels=self.y_,
@@ -91,12 +95,8 @@ class TFProcess:
             os.path.join(os.getcwd(), "logs/test"), self.session.graph)
         self.train_writer = tf.summary.FileWriter(
             os.path.join(os.getcwd(), "logs/train"), self.session.graph)
-
-        '''
-        self.init = tf.global_variables_initializer()
         self.saver = tf.train.Saver()
-        self.session.run(self.init)
-
+    
     def restore(self, file):
         print("Restoring from {0}".format(file))
         self.saver.restore(self.session, file)
