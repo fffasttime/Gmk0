@@ -1,7 +1,9 @@
 import numpy as np
 import os
+import time
 import tensorflow as tf
 print("[Info] Tensorflow loaded")
+batch_size=128
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -26,7 +28,7 @@ def max_pool(x):
 BSIZE = 15
 
 class TFProcess:
-    def __init__(self):
+    def __init__(self, is_training):
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
         config = tf.ConfigProto(gpu_options=gpu_options)
         self.session = tf.Session(config=config)
@@ -50,11 +52,17 @@ class TFProcess:
         self.batch_norm_count = 0
         self.y_conv, self.z_conv = self.construct_net(self.x)
         self.y_policy=tf.nn.softmax(self.y_conv)
+        print("[Info] Model constructed")
+        if is_training:
+            self.init_training()
+        else:
+            self.init_forward()
         
+    def init_forward(self):
         self.init = tf.global_variables_initializer()
         self.session.run(self.init)
         
-    def initraining()
+    def init_training(self):
         # Calculate loss on policy head
         cross_entropy = \
             tf.nn.softmax_cross_entropy_with_logits(labels=self.y_,
@@ -63,7 +71,7 @@ class TFProcess:
 
         # Loss on value head
         self.mse_loss = \
-            tf.reduce_mean(tf.squared_difference(self.z_, self.z_conv))
+            tf.reduce_mean(tf.squared_difference(self.z_, self.z_conv)) / 4.0
 
         # Regularizer
         regularizer = tf.contrib.layers.l2_regularizer(scale=0.0001)
@@ -96,6 +104,10 @@ class TFProcess:
         self.train_writer = tf.summary.FileWriter(
             os.path.join(os.getcwd(), "logs/train"), self.session.graph)
         self.saver = tf.train.Saver()
+
+        self.init = tf.global_variables_initializer()
+        self.session.run(self.init)
+        print("[Info] Training steps loaded")
     
     def restore(self, file):
         print("Restoring from {0}".format(file))
@@ -107,7 +119,7 @@ class TFProcess:
     
     def process(self, batch):
         # Run training for this batch
-        policy_loss, mse_loss, _, _ = self.session.run(
+        policy_loss, mse_loss, _ = self.session.run(
             [self.policy_loss, self.mse_loss, self.train_op],
             feed_dict={self.training: True,
                        self.x:batch[0], self.y_:batch[1], self.z_: batch[2]})
@@ -116,7 +128,7 @@ class TFProcess:
         # XXX: use built-in support like tf.moving_average_variables?
         # Google's paper scales MSE by 1/4 to a [0, 1] range, so do the same to
         # get comparable values.
-        mse_loss = mse_loss / 4.0
+        # mse_loss = mse_loss / 4.0
         if self.avg_policy_loss:
             self.avg_policy_loss = 0.99 * self.avg_policy_loss + 0.01 * policy_loss
         else:
@@ -154,7 +166,7 @@ class TFProcess:
                 sum_mse += train_mse
             sum_accuracy /= 10.0
             # Additionally rescale to [0, 1] so divide by 4
-            sum_mse /= (4.0 * 10.0)
+            sum_mse /= (10.0)
             test_summaries = tf.Summary(value=[
                 tf.Summary.Value(tag="Accuracy", simple_value=sum_accuracy),
                 tf.Summary.Value(tag="MSE Loss", simple_value=sum_mse)])

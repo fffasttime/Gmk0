@@ -12,7 +12,7 @@ puct=1.4
 
 print("[Info] Loading nn module")
 from nn import TFProcess
-network=TFProcess()
+network=TFProcess(False)
 print("[Info] nn module loaded")
 
 def inborder(dx, dy):
