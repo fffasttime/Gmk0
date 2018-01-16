@@ -105,11 +105,12 @@ class TFProcess:
         y,z=self.session.run([self.y_policy, self.z_conv],feed_dict={self.x:input.reshape([1,2,BSIZE*BSIZE]), self.training:False});
         return y,z
     
-    def process(self, batch_size):
+    def process(self, batch):
         # Run training for this batch
         policy_loss, mse_loss, _, _ = self.session.run(
-            [self.policy_loss, self.mse_loss, self.train_op, self.next_batch],
-            feed_dict={self.training: True})
+            [self.policy_loss, self.mse_loss, self.train_op],
+            feed_dict={self.training: True,
+                       self.x:batch[0], self.y_:batch[1], self.z_: batch[2]})
         steps = tf.train.global_step(self.session, self.global_step)
         # Keep running averages
         # XXX: use built-in support like tf.moving_average_variables?
@@ -137,6 +138,7 @@ class TFProcess:
                 tf.Summary.Value(tag="MSE Loss", simple_value=self.avg_mse_loss)])
             self.train_writer.add_summary(train_summaries, steps)
             self.time_start = time_end
+            
         # Ideally this would use a seperate dataset and so on...
         if steps % 2000 == 0:
             sum_accuracy = 0
@@ -159,12 +161,9 @@ class TFProcess:
             self.test_writer.add_summary(test_summaries, steps)
             print("step {}, training accuracy={:g}%, mse={:g}".format(
                 steps, sum_accuracy*100.0, sum_mse))
-            path = os.path.join(os.getcwd(), "leelaz-model")
+            path = os.path.join(os.getcwd(), "model")
             save_path = self.saver.save(self.session, path, global_step=steps)
             print("Model saved in file: {}".format(save_path))
-            # leela_path = path + ".txt"
-            # self.save_leelaz_weights(leela_path)
-            # print("Weights saved to {}".format(leela_path))
 
     def save_weights(self, filename):
         with open(filename, "w") as file:
