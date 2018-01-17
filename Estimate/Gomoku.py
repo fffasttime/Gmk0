@@ -19,7 +19,7 @@ def inborder(dx, dy):
     return dx>=0 and dy >=0 and dx <BSIZE and dy<BSIZE
 
 class MCTS:
-    run_cnt=800;
+    run_cnt=200;
     
     def run(self,_board, _nowcol):
         self.board=_board
@@ -28,6 +28,7 @@ class MCTS:
         #cnt, vsum, child, fa, prob, move[225]
         self.node=[[0,0.0,[], -1, 0, -1]]
         for iter in range(self.run_cnt):
+            self.globalstep=iter
             nnode=0
             while True:
                 maxv=-100.0 
@@ -119,22 +120,35 @@ class MCTS:
     def run_net(self):
         raw_input=np.ndarray([1,2,BLSIZE])
         lboard=self.board.reshape([BLSIZE])
-        raw_input[0][0]=(lboard==1).astype(float)
-        raw_input[0][1]=(lboard==-1).astype(float)
+        if self.nowcol==1:
+            raw_input[0][0]=(lboard==1).astype(float)
+            raw_input[0][1]=(lboard==-1).astype(float)
+        else:
+            raw_input[0][0]=(lboard==-1).astype(float)
+            raw_input[0][1]=(lboard==1).astype(float)
         y,z=network.forward(raw_input)
         return y.reshape([BLSIZE]), z[0][0]
     
     def simulation_back(self, fa):
-        probs,value=self.run_net()
-        rcc=BLSIZE
+        ret= self.judge_win()
+        if ret:
+            value=ret
+            probs=[0]
+            rcc=0
+        else:
+            probs,value=self.run_net()
+            value=0
+            rcc=BLSIZE
         plist=sorted(enumerate(probs), key=operator.itemgetter(1),reverse=True)
-        #value=self.get_value()
+        if self.globalstep==0:
+            print(probs)
+            print(value)
         plist=plist[0:rcc]
-        #print(plist)
         for ch in plist:
-            node=[0, 0.0, [], fa, ch[1], ch[0]]
-            self.node[fa][2].append(len(self.node))
-            self.node.append(node)
+            if (self.board[ch[0]//15][ch[0]%15])==0:
+                node=[0, 0.0, [], fa, ch[1], ch[0]]
+                self.node[fa][2].append(len(self.node))
+                self.node.append(node)
         self.node[fa][1]+=value
         self.node[fa][0]+=1
         while fa>0:

@@ -38,23 +38,23 @@ def main():
         #game.selfplay()
         #game.initoutAI()
         col=1
-        user_input=False
-        game.board[0][1],game.board[0][2],game.board[0][3]=1,1,1
+        user_inputw=False
+        user_inputb=True
         while True:
             cx,cy=0,0
             #game.runAI()
-            if user_input:
+            if user_inputw and col==2 or user_inputb and col==1:
                 try:
                     p1 = window.getMouse()
                 except Exception as e:
                     return
-                cx,cy = round((p1.getX()-SPACE_SKIP/2)/SPACE_SKIP),round((p1.getY()-SPACE_SKIP/2)/SPACE_SKIP)
+                cy,cx = round((p1.getX()-SPACE_SKIP/2)/SPACE_SKIP),round((p1.getY()-SPACE_SKIP/2)/SPACE_SKIP)
             else:
                 cx,cy=game.runStep()
-                p1 = window.getMouse()
+                #p1 = window.getMouse()
             if not inborder(cx,cy): continue
             if not game.setpiece(cx,cy): continue
-            piece = Circle(Point(SPACE_SKIP*(cx+0.5),SPACE_SKIP*(cy+0.5)),8)
+            piece = Circle(Point(SPACE_SKIP*(cy+0.5),SPACE_SKIP*(cx+0.5)),8)
             if col==2: piece.setFill('white')
             else: piece.setFill('black')
             piece.draw(window)

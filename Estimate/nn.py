@@ -3,7 +3,7 @@ import os
 import time
 import tensorflow as tf
 print("[Info] Tensorflow loaded")
-batch_size=128
+batch_size=1
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -85,7 +85,7 @@ class TFProcess:
             tf.nn.softmax_cross_entropy_with_logits(labels=self.y_,
                                                     logits=self.y_conv)
         self.policy_loss = tf.reduce_mean(cross_entropy)
-
+        
         # Loss on value head
         self.mse_loss = \
             tf.reduce_mean(tf.squared_difference(self.z_, self.z_conv)) / 4.0
@@ -140,10 +140,11 @@ class TFProcess:
     def process(self, batch):
         # Run training for this batch
         policy_loss, mse_loss, _ = self.session.run(
-            [self.policy_loss, self.mse_loss, self.train_op],
+            [self.y_policy, self.mse_loss, self.train_op],
             feed_dict={self.training: True,
                        self.x:batch[0], self.y_:batch[1], self.z_: batch[2]})
         steps = tf.train.global_step(self.session, self.global_step)
+        
         # Keep running averages
         # XXX: use built-in support like tf.moving_average_variables?
         # Google's paper scales MSE by 1/4 to a [0, 1] range, so do the same to
