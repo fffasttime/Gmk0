@@ -4,6 +4,8 @@
 # User-specific files
 Estimate/__pycache__/
 Estimate/logs/
+Estimate/paras/
+Estimate/data/
 *.txt
 *.suo
 *.user

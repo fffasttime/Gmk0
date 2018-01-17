@@ -28,7 +28,7 @@ def max_pool(x):
 BSIZE = 15
 
 class TFProcess:
-    def __init__(self, is_training):
+    def __init__(self, is_training, load_model = False):
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
         config = tf.ConfigProto(gpu_options=gpu_options)
         self.session = tf.Session(config=config)
@@ -54,15 +54,32 @@ class TFProcess:
         self.y_policy=tf.nn.softmax(self.y_conv)
         print("[Info] Model constructed")
         if is_training:
-            self.init_training()
+            self.init_training(load_model)
         else:
-            self.init_forward()
+            self.init_forward(load_model)
+
+    def loadParas(self):
+        checkpoint_dir="./paras/"
+        #返回checkpoint文件中checkpoint的状态
+        ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+        #print(ckpt)
+        if ckpt and ckpt.model_checkpoint_path:#如果存在以前保存的模型
+            print('[Info] Restore the model from checkpoint %s' % ckpt.model_checkpoint_path)
+            # Restores from checkpoint
+            self.saver.restore(self.session, ckpt.model_checkpoint_path)#加载模型
+            #start_step = int(ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1])
+        else:
+            print("[Error] Failed to find model")
+
+    def init_forward(self, load_model):
+        if (load_model):
+            self.saver = tf.train.Saver()
+            self.loadParas()
+        else:
+            self.init = tf.global_variables_initializer()
+            self.session.run(self.init)
         
-    def init_forward(self):
-        self.init = tf.global_variables_initializer()
-        self.session.run(self.init)
-        
-    def init_training(self):
+    def init_training(self, load_model):
         # Calculate loss on policy head
         cross_entropy = \
             tf.nn.softmax_cross_entropy_with_logits(labels=self.y_,
@@ -103,11 +120,14 @@ class TFProcess:
             os.path.join(os.getcwd(), "logs/test"), self.session.graph)
         self.train_writer = tf.summary.FileWriter(
             os.path.join(os.getcwd(), "logs/train"), self.session.graph)
-        self.saver = tf.train.Saver()
-
-        self.init = tf.global_variables_initializer()
-        self.session.run(self.init)
         print("[Info] Training steps loaded")
+        self.saver = tf.train.Saver()
+        
+        if (load_model):
+            self.loadParas()
+        else:
+            self.init = tf.global_variables_initializer()
+            self.session.run(self.init)
     
     def restore(self, file):
         print("Restoring from {0}".format(file))
@@ -153,6 +173,7 @@ class TFProcess:
             
         # Ideally this would use a seperate dataset and so on...
         if steps % 2000 == 0:
+            '''
             sum_accuracy = 0
             sum_mse = 0
             for _ in range(0, 10):
@@ -173,10 +194,15 @@ class TFProcess:
             self.test_writer.add_summary(test_summaries, steps)
             print("step {}, training accuracy={:g}%, mse={:g}".format(
                 steps, sum_accuracy*100.0, sum_mse))
-            path = os.path.join(os.getcwd(), "model")
+            '''
+            path = os.path.join(os.getcwd(), "paras/model")
             save_path = self.saver.save(self.session, path, global_step=steps)
             print("Model saved in file: {}".format(save_path))
 
+        if steps % 16000 == 0:
+            return False
+        return True
+    
     def save_weights(self, filename):
         with open(filename, "w") as file:
             # Version tag

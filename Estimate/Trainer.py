@@ -32,8 +32,7 @@ class GmkData:
 
 def main():
     trainer=TFProcess(True)
-    data=GmkData("gmkdata.txt")
-    while True:
-        trainer.process(data.next_batch(batch_size))
-    
+    data=GmkData("data/gmkdata.txt")
+    while trainer.process(data.next_batch(batch_size)):
+        pass
 main()
