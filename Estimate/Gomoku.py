@@ -39,7 +39,7 @@ class MCTS:
                         ucb=puct*self.node[ch][4]*sqrt(self.node[nnode][0])
                     else:
                         ucb=self.node[ch][1]/self.node[ch][0] + \
-                            puct*self.node[ch][4]*sqrt(self.node[nnode][0]/(self.node[ch][0]+1))
+                            puct*self.node[ch][4]*sqrt(self.node[nnode][0])/(self.node[ch][0]+1)
                     if ucb>maxv:
                         maxv=ucb
                         maxc=ch
@@ -132,21 +132,22 @@ class MCTS:
     def simulation_back(self, fa):
         ret= self.judge_win()
         if ret:
-            value=ret
+            value=1 if self.nowcol==ret else -1
             probs=[0]
             rcc=0
         else:
             probs,value=self.run_net()
             value=0
             rcc=BLSIZE
-        plist=sorted(enumerate(probs), key=operator.itemgetter(1),reverse=True)
+        #plist=sorted(enumerate(probs), key=operator.itemgetter(1),reverse=True)
+        #plist=enumerate(probs)
+        #plist=plist[0:rcc]
         if self.globalstep==0:
             print(probs)
             print(value)
-        plist=plist[0:rcc]
-        for ch in plist:
-            if (self.board[ch[0]//15][ch[0]%15])==0:
-                node=[0, 0.0, [], fa, ch[1], ch[0]]
+        for ch in range(rcc):
+            if (self.board[ch//15][ch%15])==0:
+                node=[0, 0.0, [], fa, probs[ch], ch]
                 self.node[fa][2].append(len(self.node))
                 self.node.append(node)
         self.node[fa][1]+=value
