@@ -19,7 +19,7 @@ def inborder(dx, dy):
     return dx>=0 and dy >=0 and dx <BSIZE and dy<BSIZE
 
 class MCTS:
-    run_cnt=200;
+    run_cnt=2;
     
     def run(self,_board, _nowcol):
         self.board=_board
@@ -122,10 +122,11 @@ class MCTS:
         lboard=self.board.reshape([BLSIZE])
         if self.nowcol==1:
             raw_input[0][0]=(lboard==1).astype(float)
-            raw_input[0][1]=(lboard==-1).astype(float)
+            raw_input[0][1]=(lboard==2).astype(float)
         else:
-            raw_input[0][0]=(lboard==-1).astype(float)
+            raw_input[0][0]=(lboard==2).astype(float)
             raw_input[0][1]=(lboard==1).astype(float)
+
         y,z=network.forward(raw_input)
         return y.reshape([BLSIZE]), z[0][0]
     
@@ -137,14 +138,14 @@ class MCTS:
             rcc=0
         else:
             probs,value=self.run_net()
-            value=0
             rcc=BLSIZE
         #plist=sorted(enumerate(probs), key=operator.itemgetter(1),reverse=True)
         #plist=enumerate(probs)
         #plist=plist[0:rcc]
         if self.globalstep==0:
-            print(probs)
-            print(value)
+            pass
+            #print(probs)
+            #print(value)
         for ch in range(rcc):
             if (self.board[ch//15][ch%15])==0:
                 node=[0, 0.0, [], fa, probs[ch], ch]
