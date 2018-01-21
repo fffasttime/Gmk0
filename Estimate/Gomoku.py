@@ -8,7 +8,7 @@ from io import *
 
 BSIZE=15
 BLSIZE=BSIZE*BSIZE
-puct=1.4
+puct=3
 
 print("[Info] Loading nn module")
 from nn import TFProcess
@@ -19,13 +19,13 @@ def inborder(dx, dy):
     return dx>=0 and dy >=0 and dx <BSIZE and dy<BSIZE
 
 class MCTS:
-    run_cnt=2;
+    run_cnt=20;
     
     def run(self,_board, _nowcol):
         self.board=_board
         self.nowcol=_nowcol
         self.size=0;
-        #cnt, vsum, child, fa, prob, move[225]
+        #vcnt, vsum, child, fa, prob, move[225]
         self.node=[[0,0.0,[], -1, 0, -1]]
         for iter in range(self.run_cnt):
             self.globalstep=iter
@@ -36,7 +36,8 @@ class MCTS:
                 for ch in self.node[nnode][2]:
                     ucb=0
                     if self.node[ch][0]==0:
-                        ucb=puct*self.node[ch][4]*sqrt(self.node[nnode][0])
+                        ucb=-self.node[nnode][1]/self.node[nnode][0] + \
+                            puct*self.node[ch][4]*sqrt(self.node[nnode][0])
                     else:
                         ucb=self.node[ch][1]/self.node[ch][0] + \
                             puct*self.node[ch][4]*sqrt(self.node[nnode][0])/(self.node[ch][0]+1)
@@ -50,10 +51,12 @@ class MCTS:
                 self.make_move(self.node[nnode][5])
         count=[0] * 225
         blief=[0.0] * 225
+        print(self.node[0][1]/self.node[0][0])
         for ch in self.node[0][2]:
             count[self.node[ch][5]]=self.node[ch][0]
             if (self.node[ch][0]!=0):
                 blief[self.node[ch][5]]=self.node[ch][1]/self.node[ch][0]
+                print(self.node[ch][1]/self.node[ch][0])
         return blief, np.array(count)
         """
         maxv=-100
@@ -133,11 +136,12 @@ class MCTS:
     def simulation_back(self, fa):
         ret= self.judge_win()
         if ret:
-            value=1 if self.nowcol==ret else -1
+            value=-1 if self.nowcol==ret else 1
             probs=[0]
             rcc=0
         else:
             probs,value=self.run_net()
+            value=-value
             rcc=BLSIZE
         #plist=sorted(enumerate(probs), key=operator.itemgetter(1),reverse=True)
         #plist=enumerate(probs)
@@ -164,6 +168,8 @@ class Gomoku:
     board=np.ndarray([BSIZE,BSIZE],int)
     nowcol=1
     movelist=[]
+    decisionlist=[]
+    
     def __init__(self):
         self.movelist=[]
         self.board.fill(0)
@@ -173,7 +179,6 @@ class Gomoku:
             return False
         self.board[dx][dy]=self.nowcol
         self.nowcol=(self.nowcol % 2) + 1
-        self.movelist.append([dx, dy])
         return True
 
     def judgewin(self):
@@ -232,21 +237,33 @@ class Gomoku:
         for i in movelist:
             s+= str(i[0]) + ' ' + str(i[1]) + ' '
         return s
-    blieflist=[]
+    
     def runStep(self):
         mc=MCTS()
+        if self.nowcol==1:
+            mc.run_cnt=2
         blief, counts=mc.run(self.board.copy(), self.nowcol)
         print(counts)
-        counts = np.power(counts, 2)
-        self.blieflist.append(blief)
+        counts = np.power(counts, 1)
         counts=counts/counts.sum()
-        ret=np.argmax(counts)
-        #ret=(random.choices(range(225),counts))[0]
+        #ret=np.argmax(counts)
+        ret=(random.choices(range(225),counts))[0]
+        self.decisionlist.append(counts)
+        self.movelist.append(ret)
         return ret//15, ret%15
         #run=lib.run
         #run.restype = ctypes.c_char_p
         #print(run(toString))
 
+    def writeData(self):
+        fout=open("data/selfdata.txt","a")
+        fout.write(str(len(self.movelist))+'\n')
+        for i,x in enumerate(self.movelist):
+            fout.write(str(x) + ' ')
+            for j in range(BLSIZE):
+                fout.write(str(self.decisionlist[i][j])+' ')
+            fout.write('\n')
+    
     def selfplay(self):
         winner=0
         while True:

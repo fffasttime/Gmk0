@@ -134,7 +134,7 @@ class TFProcess:
         self.saver.restore(self.session, file)
 
     def forward(self, input):
-        y,z=self.session.run([self.y_policy, self.z_conv],feed_dict={self.x:input.reshape([1,2,BSIZE*BSIZE]), self.training:False});
+        y,z=self.session.run([self.y_policy, self.z_conv],feed_dict={self.x:input.reshape([-1,2,BSIZE*BSIZE]), self.training:False});
         return y,z
     
     def process(self, batch):

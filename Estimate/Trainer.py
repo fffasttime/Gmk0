@@ -8,7 +8,7 @@ BSIZE=15
 class GmkData:
     def __init__(self,filename):
         self.nowindex=0
-        print("[Info] Start loading data from" + filename)
+        print("[Info] Start loading data from " + filename)
         td=np.loadtxt(filename,dtype=np.float32)
         print("[Info] Loaded, reshape data...")
         np.random.shuffle(td)

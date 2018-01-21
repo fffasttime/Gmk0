@@ -38,7 +38,7 @@ def main():
         #game.selfplay()
         #game.initoutAI()
         col=1
-        user_inputw=True
+        user_inputw=False
         user_inputb=False
         while True:
             cx,cy=0,0
@@ -68,7 +68,7 @@ def main():
         message.setSize(30)
         message.setFill('white')
         message.draw(window)
-        
+        game.writeData()
         try:
             window.getMouse()
         except Exception as e:
