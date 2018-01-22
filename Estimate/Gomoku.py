@@ -8,6 +8,8 @@ from io import *
 
 BSIZE=15
 BLSIZE=BSIZE*BSIZE
+BIGVALUE=1000
+
 puct=3
 
 print("[Info] Loading nn module")
@@ -19,36 +21,41 @@ def inborder(dx, dy):
     return dx>=0 and dy >=0 and dx <BSIZE and dy<BSIZE
 
 class MCTS:
-    run_cnt=20;
+    run_cnt=100;
     
     def run(self,_board, _nowcol):
         self.board=_board
         self.nowcol=_nowcol
         self.size=0;
-        #vcnt, vsum, child, fa, prob, move[225]
-        self.node=[[0,0.0,[], -1, 0, -1]]
+        #vcnt, vsum, child, fa, prob(225f), move, movech(225i)
+        self.node=[[0,0.0,[], -1, np.zeros([BLSIZE]), -1, np.zeros([BLSIZE], dtype=int)]]
+        
         for iter in range(self.run_cnt):
             self.globalstep=iter
             nnode=0
             while True:
-                maxv=-100.0 
-                maxc=-1
-                for ch in self.node[nnode][2]:
-                    ucb=0
-                    if self.node[ch][0]==0:
-                        ucb=-self.node[nnode][1]/self.node[nnode][0] + \
-                            puct*self.node[ch][4]*sqrt(self.node[nnode][0])
-                    else:
-                        ucb=self.node[ch][1]/self.node[ch][0] + \
-                            puct*self.node[ch][4]*sqrt(self.node[nnode][0])/(self.node[ch][0]+1)
-                    if ucb>maxv:
-                        maxv=ucb
-                        maxc=ch
-                if maxc==-1:
-                    self.simulation_back(nnode)
+                cur=self.node[nnode]
+                #use numpy to make judge faster
+                fvis=sqrt(cur[0])
+                ucbs=np.zeros([BLSIZE])
+                vcnts=np.zeros([BLSIZE])
+                ucbs += puct * sqrt(cur[0]) * cur[4] / (1 + vcnts)
+                #delete invalid move
+                ucbs-=(self.board>0).astype(float)*BIGVALUE
+                for ch in cur[2]:
+                    move=self.node[ch][5]
+                    ucbs[move]=self.node[ch][1]/self.node[ch][0]
+                    vcnts[move]=self.node[ch][0]
+                maxmove=np.argmax(ucbs)
+                #maxv=ucbs[maxmove]
+                maxc=cur[6][maxmove]
+                self.make_move(maxmove)
+                if maxc==0:
                     break
                 nnode=maxc
-                self.make_move(self.node[nnode][5])
+                
+            self.simulation_back(nnode)
+        
         count=[0] * 225
         blief=[0.0] * 225
         print(self.node[0][1]/self.node[0][0])
@@ -133,8 +140,8 @@ class MCTS:
         y,z=network.forward(raw_input)
         return y.reshape([BLSIZE]), z[0][0]
     
-    def simulation_back(self, fa):
-        ret= self.judge_win()
+    def simulation_back(self, fa, move):
+        ret=self.judge_win()
         if ret:
             value=-1 if self.nowcol==ret else 1
             probs=[0]
@@ -150,28 +157,27 @@ class MCTS:
             pass
             #print(probs)
             #print(value)
-        for ch in range(rcc):
-            if (self.board[ch//15][ch%15])==0:
-                node=[0, 0.0, [], fa, probs[ch], ch]
-                self.node[fa][2].append(len(self.node))
-                self.node.append(node)
-        self.node[fa][1]+=value
-        self.node[fa][0]+=1
+        
+        node=[1, value, [], fa, probs, move, np.zeros(BLSIZE, int)]
+        trcnt=len(self.node)
+        self.node[fa][2].append(trcnt)
+        self.node[fa][6][move]=trcnt
+        
+        self.node.append(node)
+
         while fa>0:
             self.unmake_move(self.node[fa][5])
-            fa=self.node[fa][3]
             value=-value
             self.node[fa][1]+=value
             self.node[fa][0]+=1
+            fa=self.node[fa][3]
 
 class Gomoku:
-    board=np.ndarray([BSIZE,BSIZE],int)
-    nowcol=1
-    movelist=[]
-    decisionlist=[]
-    
     def __init__(self):
+        self.nowcol=1
         self.movelist=[]
+        self.decisionlist=[]
+        self.board=np.ndarray([BSIZE,BSIZE],int)
         self.board.fill(0)
 
     def setpiece(self,dx, dy):
@@ -240,8 +246,8 @@ class Gomoku:
     
     def runStep(self):
         mc=MCTS()
-        if self.nowcol==1:
-            mc.run_cnt=2
+        #if self.nowcol==1:
+        #    mc.run_cnt=2
         blief, counts=mc.run(self.board.copy(), self.nowcol)
         print(counts)
         counts = np.power(counts, 1)
