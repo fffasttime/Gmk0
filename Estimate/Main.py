@@ -38,7 +38,7 @@ def main():
         #game.selfplay()
         #game.initoutAI()
         col=1
-        user_inputw=False
+        user_inputw=True
         user_inputb=False
         while True:
             cx,cy=0,0

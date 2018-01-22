@@ -21,17 +21,19 @@ def inborder(dx, dy):
     return dx>=0 and dy >=0 and dx <BSIZE and dy<BSIZE
 
 class MCTS:
-    run_cnt=100;
+    run_cnt=20;
     
     def run(self,_board, _nowcol):
         self.board=_board
         self.nowcol=_nowcol
         self.size=0;
-        #vcnt, vsum, child, fa, prob(225f), move, movech(225i)
-        self.node=[[0,0.0,[], -1, np.zeros([BLSIZE]), -1, np.zeros([BLSIZE], dtype=int)]]
+        self.globalstep=0
+        #vcnt, vsum, child, fa, prob(225f), move, movech(225i), isEnd
+        self.node=[]
+        self.simulation_back(-1,0)
         
         for iter in range(self.run_cnt):
-            self.globalstep=iter
+            self.globalstep=iter + 1
             nnode=0
             while True:
                 cur=self.node[nnode]
@@ -41,7 +43,7 @@ class MCTS:
                 vcnts=np.zeros([BLSIZE])
                 ucbs += puct * sqrt(cur[0]) * cur[4] / (1 + vcnts)
                 #delete invalid move
-                ucbs-=(self.board>0).astype(float)*BIGVALUE
+                ucbs-=(self.board>0).reshape([BLSIZE]).astype(float)*BIGVALUE
                 for ch in cur[2]:
                     move=self.node[ch][5]
                     ucbs[move]=self.node[ch][1]/self.node[ch][0]
@@ -50,11 +52,10 @@ class MCTS:
                 #maxv=ucbs[maxmove]
                 maxc=cur[6][maxmove]
                 self.make_move(maxmove)
-                if maxc==0:
+                if maxc==0 or self.node[maxc][7]:
+                    self.simulation_back(nnode,maxmove)
                     break
                 nnode=maxc
-                
-            self.simulation_back(nnode)
         
         count=[0] * 225
         blief=[0.0] * 225
@@ -142,29 +143,39 @@ class MCTS:
     
     def simulation_back(self, fa, move):
         ret=self.judge_win()
+        isend=False
         if ret:
             value=-1 if self.nowcol==ret else 1
-            probs=[0]
-            rcc=0
+            probs=np.zeros([BLSIZE])
+            isend=True
         else:
             probs,value=self.run_net()
             value=-value
-            rcc=BLSIZE
-        #plist=sorted(enumerate(probs), key=operator.itemgetter(1),reverse=True)
-        #plist=enumerate(probs)
-        #plist=plist[0:rcc]
+            
+        #isend
+        if fa>=0 and self.node[fa][6][move]>0:
+            cur=self.node[fa][6][move]
+            self.node[cur][0]+=1
+            self.node[cur][1]+=value
+            self.backprop(fa, value)
+            return
+        
         if self.globalstep==0:
             pass
             #print(probs)
             #print(value)
         
-        node=[1, value, [], fa, probs, move, np.zeros(BLSIZE, int)]
+        node=[1, value, [], fa, probs, move, np.zeros(BLSIZE, int), isend]
         trcnt=len(self.node)
-        self.node[fa][2].append(trcnt)
-        self.node[fa][6][move]=trcnt
+        if fa>=0:
+            self.node[fa][2].append(trcnt)
+            self.node[fa][6][move]=trcnt
         
         self.node.append(node)
 
+        self.backprop(fa, value)
+
+    def backprop(self, fa, value):
         while fa>0:
             self.unmake_move(self.node[fa][5])
             value=-value
