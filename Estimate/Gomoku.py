@@ -24,6 +24,9 @@ def printb(board):
     for i in range(BSIZE):
         print(str(board[i]))
 
+def strpos(mx, my):
+    return chr(mx+65)+str(my)
+
 class MCTS:
     run_cnt=80;
     
@@ -290,12 +293,12 @@ class Gomoku:
         winner=0
         while True:
             mx,my = self.runStep()
-            print(mx, my)
+            print(strpos(mx, my), end=' ')
             if not self.setpiece(mx,my):
                 winner=self.nowcol % 2 +1
                 break
             if self.judgewin():
                 winner=self.nowcol
                 break
-        print("col", winner, "win")
+        print("\ncol", winner, "win")
         self.writeData(winner)

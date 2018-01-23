@@ -77,6 +77,7 @@ def runGUI():
 
 def selfplay():
     for i in range(2048):
+        print("Game",i)
         game = Gomoku()
         game.selfplay()
 
