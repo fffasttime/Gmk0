@@ -30,7 +30,7 @@ def initboard(window):
         i+=SPACE_SKIP
         c+=1
 
-def main():
+def runGUI():
     window = setupwindow()
     while True:
         initboard(window)
@@ -38,7 +38,7 @@ def main():
         #game.selfplay()
         #game.initoutAI()
         col=1
-        user_inputw=True
+        user_inputw=False
         user_inputb=False
         while True:
             cx,cy=0,0
@@ -74,6 +74,12 @@ def main():
         except Exception as e:
             return
     window.close()
-    
 
-main()
+def selfplay():
+    for i in range(2048):
+        game = Gomoku()
+        game.selfplay()
+
+selfplay()
+
+#runGUI()
