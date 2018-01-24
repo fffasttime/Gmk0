@@ -11,12 +11,12 @@ BLSIZE=BSIZE*BSIZE
 BIGVALUE=1000
 
 puct=2
-
+'''
 print("[Info] Loading nn module")
 from nn import TFProcess
 network=TFProcess(False, False)
 print("[Info] nn module loaded")
-
+'''
 def inborder(dx, dy):
     return dx>=0 and dy >=0 and dx <BSIZE and dy<BSIZE
 
@@ -28,12 +28,12 @@ def strpos(mx, my):
     return chr(mx+65)+str(my)
 
 def add_dirlect_noise(policy, epsilon, alpha):
-    dirlect=np.array([random.gammavariate(alpha, 1.0)])
-    dirlect=dirlect/np.sum(dirlect)
+    dirlect=np.random.dirichlet([alpha] * BLSIZE)
     policy=(1-epsilon)*policy + epsilon*dirlect
+    return policy
 
 class MCTS:
-    run_cnt=80;
+    run_cnt=125;
     
     def run(self,_board, _nowcol):
         self.board=_board
@@ -154,11 +154,15 @@ class MCTS:
         y,z=network.forward(raw_input)
         return y.reshape([BLSIZE]), z[0][0]
 
-    def create_root(self):        
-        probs,value=self.run_net()
+    def create_root(self):
+        #probs,value=self.run_net()
+        probs=np.zeros([BLSIZE])
+        probs+=1/BLSIZE
+        value=0
         value=-value
-        add_dirlect_noise(probs, 0.25, 0.03)
-        node=[1, value, [], -1, probs, move, np.zeros(BLSIZE, int), false]
+        probs=add_dirlect_noise(probs, 0.25, 0.03)
+        node=[1, value, [], -1, probs, -1, np.zeros(BLSIZE, int), False]
+        self.node.append(node)
         
     def simulation_back(self, fa, move):
         ret=self.judge_win()
@@ -168,7 +172,10 @@ class MCTS:
             probs=np.zeros([BLSIZE])
             isend=True
         else:
-            probs,value=self.run_net()
+            #probs,value=self.run_net()
+            probs=np.zeros([BLSIZE])
+            probs+=1/BLSIZE
+            value=0
             value=-value
             
         #isend
@@ -282,6 +289,7 @@ class Gomoku:
         #if self.nowcol==1:
         #    mc.run_cnt=2
         counts=mc.run(self.board.copy(), self.nowcol)
+        #print(counts)
         counts = np.power(counts, 1)
         counts=counts/counts.sum()
         #ret=np.argmax(counts)
@@ -296,9 +304,9 @@ class Gomoku:
         for i,x in enumerate(self.movelist):
             fout.write(str(x) + ' ')
             for j in range(BLSIZE):
-                fout.write(str(self.decisionlist[i][j])+' ')
+                fout.write(str(round(self.decisionlist[i][j], 6))+' ')
             fout.write('\n')
-        fout.write(str(winner))
+        fout.write(str(winner)+'\n')
     
     def selfplay(self):
         winner=0

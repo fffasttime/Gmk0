@@ -68,7 +68,7 @@ def runGUI():
         message.setSize(30)
         message.setFill('white')
         message.draw(window)
-        game.writeData()
+        #game.writeData(col)
         try:
             window.getMouse()
         except Exception as e:
@@ -76,7 +76,7 @@ def runGUI():
     window.close()
 
 def selfplay():
-    for i in range(2048):
+    for i in range(4096):
         print("Game",i)
         game = Gomoku()
         game.selfplay()
