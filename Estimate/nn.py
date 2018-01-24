@@ -6,7 +6,8 @@ print("[Info] Tensorflow loaded")
 batch_size=128
 
 def weight_variable(shape):
-    initial = tf.truncated_normal(shape, stddev=0.1)
+    stddev = np.sqrt(2.0 / (sum(shape)))
+    initial = tf.truncated_normal(shape, stddev=stddev)
     return tf.Variable(initial)
 
 def bias_variable(shape):

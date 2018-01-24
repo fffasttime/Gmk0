@@ -27,6 +27,11 @@ def printb(board):
 def strpos(mx, my):
     return chr(mx+65)+str(my)
 
+def add_dirlect_noise(policy, epsilon, alpha):
+    dirlect=np.array([random.gammavariate(alpha, 1.0)])
+    dirlect=dirlect/np.sum(dirlect)
+    policy=(1-epsilon)*policy + epsilon*dirlect
+
 class MCTS:
     run_cnt=80;
     
@@ -37,7 +42,7 @@ class MCTS:
         self.globalstep=0
         #vcnt, vsum, child, fa, prob(225f), move, movech(225i), isEnd
         self.node=[]
-        self.simulation_back(-1,0)
+        self.create_root()
         
         for iter in range(self.run_cnt):
             self.globalstep=iter + 1
@@ -148,7 +153,13 @@ class MCTS:
         
         y,z=network.forward(raw_input)
         return y.reshape([BLSIZE]), z[0][0]
-    
+
+    def create_root(self):        
+        probs,value=self.run_net()
+        value=-value
+        add_dirlect_noise(probs, 0.25, 0.03)
+        node=[1, value, [], -1, probs, move, np.zeros(BLSIZE, int), false]
+        
     def simulation_back(self, fa, move):
         ret=self.judge_win()
         isend=False
@@ -173,13 +184,13 @@ class MCTS:
             pass
             #print(probs)
             #print(value)
-        if (fa>=0):
-            self.unmake_move(move)
+        
+        self.unmake_move(move)
         node=[1, value, [], fa, probs, move, np.zeros(BLSIZE, int), isend]
         trcnt=len(self.node)
-        if fa>=0:
-            self.node[fa][2].append(trcnt)
-            self.node[fa][6][move]=trcnt
+        
+        self.node[fa][2].append(trcnt)
+        self.node[fa][6][move]=trcnt
         
         self.node.append(node)
 
