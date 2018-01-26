@@ -69,5 +69,8 @@ mini_batch
 
 1-26
   iteration 0 ok
-  test shows decay_reward is important
-  
+  test shows decay_reward is important (=0.9)
+  weight_0 vs random
+w    41         9
+b    44         6
+85% PASS

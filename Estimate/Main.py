@@ -94,5 +94,5 @@ def selfmatch():
     print(win)
 
 #selfmatch()
-selfplay()
-#runGUI()
+#selfplay()
+runGUI()
