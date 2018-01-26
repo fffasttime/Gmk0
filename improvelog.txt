@@ -46,3 +46,28 @@ mini_batch
 12-30
   target: conv->res
   +bn, +dual 
+
+1-22
+  starting SL test
+  problem: speed of mcts too slow
+
+1-23
+  SL test ok
+  completed NN estimate
+  generate data test
+  optimized mcts selection, 2-3x speed up
+
+1-24
+  self dataset ok, but found a few problem
+  add dirlect noise
+  start iteration 0
+
+1-25
+  found small fault at iteration 0
+  output of winner reversed(correct by retransdata)
+  a small fault in SL data transform and a big fault in It0 data trans.(fixed)
+
+1-26
+  iteration 0 ok
+  test shows decay_reward is important
+  

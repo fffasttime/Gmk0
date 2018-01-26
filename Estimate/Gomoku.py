@@ -10,13 +10,13 @@ BSIZE=15
 BLSIZE=BSIZE*BSIZE
 BIGVALUE=1000
 
-puct=2
-'''
+puct=2.5
+
 print("[Info] Loading nn module")
 from nn import TFProcess
-network=TFProcess(False, False)
+network=TFProcess(False, True)
 print("[Info] nn module loaded")
-'''
+
 def inborder(dx, dy):
     return dx>=0 and dy >=0 and dx <BSIZE and dy<BSIZE
 
@@ -33,11 +33,12 @@ def add_dirlect_noise(policy, epsilon, alpha):
     return policy
 
 class MCTS:
-    run_cnt=125;
+    run_cnt=120;
     
     def run(self,_board, _nowcol):
         self.board=_board
         self.nowcol=_nowcol
+        self.startcol=_nowcol;
         self.size=0;
         self.globalstep=0
         #vcnt, vsum, child, fa, prob(225f), move, movech(225i), isEnd
@@ -52,7 +53,7 @@ class MCTS:
                 #use numpy to make judge faster
                 fvis=sqrt(cur[0])
                 ucbs=np.zeros([BLSIZE])
-                #ucbs.fill(-cur[1]/cur[0])
+                ucbs.fill(-cur[1]/cur[0]/1.5)
                 vcnts=np.zeros([BLSIZE])
                 for ch in cur[2]:
                     move=self.node[ch][5]
@@ -69,6 +70,7 @@ class MCTS:
                     self.simulation_back(nnode,maxmove)
                     break
                 nnode=maxc
+        #print(-self.node[0][1]/self.node[0][0])
         count=[0] * 225
         blief=[0.0] * 225
         for ch in self.node[0][2]:
@@ -142,6 +144,11 @@ class MCTS:
         return ret,rcc
 
     def run_net(self):
+        if self.startcol==0:
+            probs=np.zeros([BLSIZE])
+            probs+=1/BLSIZE
+            value=0
+            return probs,value
         raw_input=np.ndarray([1,2,BLSIZE])
         lboard=self.board.reshape([BLSIZE])
         if self.nowcol==1:
@@ -152,15 +159,14 @@ class MCTS:
             raw_input[0][1]=(lboard==1).astype(float)
         
         y,z=network.forward(raw_input)
+        #print(z[0][0])
         return y.reshape([BLSIZE]), z[0][0]
 
     def create_root(self):
-        #probs,value=self.run_net()
-        probs=np.zeros([BLSIZE])
-        probs+=1/BLSIZE
-        value=0
+        probs,value=self.run_net()
         value=-value
-        probs=add_dirlect_noise(probs, 0.25, 0.03)
+        if 1:
+            probs=add_dirlect_noise(probs, 0.25, 0.02)
         node=[1, value, [], -1, probs, -1, np.zeros(BLSIZE, int), False]
         self.node.append(node)
         
@@ -172,10 +178,7 @@ class MCTS:
             probs=np.zeros([BLSIZE])
             isend=True
         else:
-            #probs,value=self.run_net()
-            probs=np.zeros([BLSIZE])
-            probs+=1/BLSIZE
-            value=0
+            probs,value=self.run_net()
             value=-value
             
         #isend
@@ -290,7 +293,11 @@ class Gomoku:
         #    mc.run_cnt=2
         counts=mc.run(self.board.copy(), self.nowcol)
         #print(counts)
-        counts = np.power(counts, 1)
+        if np.sum((self.board>0).astype(float)) > 25:
+            te=2
+        else:
+            te=1
+        counts = np.power(counts, te)
         counts=counts/counts.sum()
         #ret=np.argmax(counts)
         ret=(random.choices(range(225),counts))[0]
@@ -317,7 +324,22 @@ class Gomoku:
                 winner=self.nowcol % 2 +1
                 break
             if self.judgewin():
-                winner=self.nowcol
+                winner=self.nowcol % 2 +1
                 break
         print("\ncol", winner, "win")
         self.writeData(winner)
+
+    def selfmatch(self):
+        winner=0
+        while True:
+            mx,my = self.runStep()
+            print(strpos(mx, my), end=' ')
+            if not self.setpiece(mx,my):
+                winner=self.nowcol % 2 +1
+                break
+            if self.judgewin():
+                winner=self.nowcol % 2 +1
+                break
+        print("\ncol", winner, "win")
+        return winner
+        

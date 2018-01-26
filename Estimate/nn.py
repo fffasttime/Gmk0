@@ -60,7 +60,7 @@ class TFProcess:
             self.init_forward(load_model)
 
     def loadParas(self):
-        checkpoint_dir="./paras/"
+        checkpoint_dir="./paras/I0/"
         #返回checkpoint文件中checkpoint的状态
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         #print(ckpt)
@@ -197,7 +197,7 @@ class TFProcess:
             print("step {}, training accuracy={:g}%, mse={:g}".format(
                 steps, sum_accuracy*100.0, sum_mse))
             '''
-            path = os.path.join(os.getcwd(), "paras/model")
+            path = os.path.join(os.getcwd(), "paras/I0/model")
             save_path = self.saver.save(self.session, path, global_step=steps)
             print("Model saved in file: {}".format(save_path))
 

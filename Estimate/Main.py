@@ -76,11 +76,23 @@ def runGUI():
     window.close()
 
 def selfplay():
-    for i in range(4096):
+    for i in range(2048):
         print("Game",i)
         game = Gomoku()
         game.selfplay()
 
-selfplay()
+def selfmatch():
+    win=0.0
+    for i in range(50):
+        print("Game",i)
+        game = Gomoku()
+        winner=game.selfmatch()
+        if winner==1:
+            win+=1
+        elif winner==0:
+            win+=0.5
+    print(win)
 
+#selfmatch()
+selfplay()
 #runGUI()
