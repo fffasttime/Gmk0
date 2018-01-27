@@ -21,7 +21,6 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Estimate.py" />
     <Compile Include="Gomoku.py" />
     <Compile Include="Main.py" />
     <Compile Include="nn.py">
