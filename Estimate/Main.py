@@ -48,7 +48,8 @@ def runGUI():
                     p1 = window.getMouse()
                 except Exception as e:
                     return
-                cy,cx = round((p1.getX()-SPACE_SKIP/2)/SPACE_SKIP),round((p1.getY()-SPACE_SKIP/2)/SPACE_SKIP)
+                cy = round((p1.getX()-SPACE_SKIP/2)/SPACE_SKIP)
+                cx = round((p1.getY()-SPACE_SKIP/2)/SPACE_SKIP)
             else:
                 cx,cy=game.runStep()
                 #p1 = window.getMouse()
@@ -94,5 +95,5 @@ def selfmatch():
     print(win)
 
 #selfmatch()
-#selfplay()
-runGUI()
+selfplay()
+#runGUI()

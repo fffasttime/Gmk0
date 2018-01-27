@@ -15,7 +15,7 @@ from nn import TFProcess
 network=TFProcess(False, True)
 print("[Info] nn module loaded")
 
-BIGVALUE=1000
+BIGVALUE=10000
 puct=2.5
 
 def add_dirlect_noise(policy, epsilon, alpha):
@@ -24,7 +24,7 @@ def add_dirlect_noise(policy, epsilon, alpha):
     return policy
 
 class MCTS:
-    run_cnt=120;
+    run_cnt=120
     max_thread=6
     
     def run(self,_board, _nowcol):
@@ -38,11 +38,11 @@ class MCTS:
         self.create_root()
 
         #first 10 nodes use 1 thread
-        for i in range(min(range(10), run_cnt)):
+        for i in range(min(10, self.run_cnt)):
             self.run_batch(1)
-        if run_cnt>10:
-            for i in range((run_cnt-10)//max_thread+1):
-                self.run_batch(max_thread)
+        if self.run_cnt>10:
+            for i in range((self.run_cnt-10)//self.max_thread+1):
+                self.run_batch(self.max_thread)
         
         #print(-self.node[0][1]/self.node[0][0])
         count=[0] * 225
@@ -66,35 +66,35 @@ class MCTS:
         self.board[move//15][move%15]=0
         self.nowcol=self.nowcol % 2 +1
 
-    def judge_win(self):
+    def judge_win(self, board):
         for i in range(4,BSIZE):
             for j in range(BSIZE):
-                if self.board[i][j]!=0:
-                    pcol=self.board[i][j]
-                    if self.board[i-1][j]==pcol and self.board[i-2][j]==pcol and self.board[i-3][j]==pcol and self.board[i-4][j]==pcol:
+                if board[i][j]!=0:
+                    pcol=board[i][j]
+                    if board[i-1][j]==pcol and board[i-2][j]==pcol and board[i-3][j]==pcol and board[i-4][j]==pcol:
                         return pcol
         for i in range(BSIZE):
             for j in range(4,BSIZE):
-                if self.board[i][j]!=0:
-                    pcol=self.board[i][j]
-                    if self.board[i][j-1]==pcol and self.board[i][j-2]==pcol and self.board[i][j-3]==pcol and self.board[i][j-4]==pcol:
+                if board[i][j]!=0:
+                    pcol=board[i][j]
+                    if board[i][j-1]==pcol and board[i][j-2]==pcol and board[i][j-3]==pcol and board[i][j-4]==pcol:
                         return pcol
         for i in range(4,BSIZE):
             for j in range(4,BSIZE):
-                if self.board[i][j]!=0:
-                    pcol=self.board[i][j]
-                    if self.board[i-1][j-1]==pcol and self.board[i-2][j-2]==pcol and self.board[i-3][j-3]==pcol and self.board[i-4][j-4]==pcol:
+                if board[i][j]!=0:
+                    pcol=board[i][j]
+                    if board[i-1][j-1]==pcol and board[i-2][j-2]==pcol and board[i-3][j-3]==pcol and board[i-4][j-4]==pcol:
                         return pcol
         for i in range(4,BSIZE):
             for j in range(0,BSIZE-4):
-                if self.board[i][j]!=0:
-                    pcol=self.board[i][j]
-                    if self.board[i-1][j+1]==pcol and self.board[i-2][j+2]==pcol and self.board[i-3][j+3]==pcol and self.board[i-4][j+4]==pcol:
+                if board[i][j]!=0:
+                    pcol=board[i][j]
+                    if board[i-1][j+1]==pcol and board[i-2][j+2]==pcol and board[i-3][j+3]==pcol and board[i-4][j+4]==pcol:
                         return pcol
         return 0
 
     def get_value(self):
-        ret= self.judge_win()
+        ret= self.judge_win(self.board)
         if ret:
             return -1 if ret==self.nowcol else 1
         return 0
@@ -111,8 +111,8 @@ class MCTS:
         ret/=rcc
         return ret,rcc
     
-    def dump_board(self):
-        lboard=self.board.reshape([BLSIZE])
+    def dump_board(self, board):
+        lboard=board.reshape([BLSIZE])
         if self.nowcol==1:
             self.raw_input[self.dump_c][0]=(lboard==1).astype(float)
             self.raw_input[self.dump_c][1]=(lboard==2).astype(float)
@@ -121,33 +121,32 @@ class MCTS:
             self.raw_input[self.dump_c][1]=(lboard==1).astype(float)
         self.dump_c+=1
 
-    def run1(self, dumps):
+    def run_batch(self, dumps):
         self.raw_input=np.ndarray([dumps,2,BLSIZE])
         simulatelist=[]
+        self.dump_c=0
         for i in range(dumps):
             self.board_temp=self.board.copy()
-            self.nowcol=self.nowcol_start
+            self.nowcol=self.startcol
             nnode, maxmove, isend = self.selection()
             if isend:
-                cur=self.node[nnode][7][maxmove]
+                cur=self.node[nnode][6][maxmove]
                 value=1
                 self.node[cur][0]+=1
-                self.node[cur][1]+=val
-                backprob(nnode, value)
+                self.node[cur][1]+=value
+                self.backprop(nnode, value)
             else:
-                r=self.judge_win()
+                r=self.judge_win(self.board_temp)
                 if r:
-                    val = 1
-                    self.node[nnode][1]+=BIGNUM
-                    self.expand_back(nnode, maxmove, np.zeros([225]), val, True)
+                    self.expand_back_end(nnode, maxmove)
                 else:
+                    self.expand_leaf(nnode, maxmove)
                     simulatelist.append((nnode, maxmove))
-                    dump_board(self.board_temp)
-        if len(simulatelist)>0:
-            y,z=network.forward(self.raw_input[:len(simulatelist)])
+                    self.dump_board(self.board_temp)
+        if self.dump_c>0:
+            y,z=network.forward(self.raw_input[:self.dump_c])
         for i, item in enumerate(simulatelist):
-            self.node[nnode][1]+=BIGNUM
-            self.expand_back(item[0], item[1], y[i], z[i])
+            self.back_leaf(item[0], item[1], y[i], z[i][0])
             
     def selection(self):
         nnode=0
@@ -170,17 +169,10 @@ class MCTS:
             maxc=cur[6][maxmove]
             self.make_move_board(maxmove, self.board_temp)
             if maxc==0 or self.node[maxc][7]:
-                if maxc==0:
-                    self.node[maxc][1]-=BIGNUM  #virtual_loss
                 return nnode, maxmove, self.node[maxc][7]
             nnode=maxc
     
     def run_net_1(self):
-        if self.startcol==2:
-            probs=np.zeros([BLSIZE])
-            probs+=1/BLSIZE
-            value=0
-            return probs,value
         raw_input=np.ndarray([1,2,BLSIZE])
         lboard=self.board.reshape([BLSIZE])
         if self.nowcol==1:
@@ -201,16 +193,29 @@ class MCTS:
             probs=add_dirlect_noise(probs, 0.25, 0.02)
         node=[1, value, [], -1, probs, -1, np.zeros(BLSIZE, int), False]
         self.node.append(node)
-    
-    def expand_back(self, fa, move, probs, value, isend):
-        node=[1, value, [], fa, probs, move, np.zeros(BLSIZE, int), isend]
+
+    def expand_back_end(self, fa, move):
+        node=[1, 1, [], fa, np.zeros(BLSIZE), move, np.zeros(BLSIZE, int), True]
         trcnt=len(self.node)
-        
         self.node[fa][2].append(trcnt)
         self.node[fa][6][move]=trcnt
-        
         self.node.append(node)
+        self.backprop(fa, 1)
 
+    def expand_leaf(self, fa, move):
+        #value use virtual loss
+        node=[1, -BIGVALUE, [], fa, np.zeros(BLSIZE), move, np.zeros(BLSIZE, int), False]
+        trcnt=len(self.node)
+        self.node[fa][2].append(trcnt)
+        self.node[fa][6][move]=trcnt
+        self.node.append(node)
+        
+    def back_leaf(self, fa, move, probs, value):
+        value=-value
+        cur=self.node[fa][6][move]
+        self.node[cur][1]=value
+        self.node[cur][4]=probs
+            
         self.backprop(fa, value)
 
     def backprop(self, fa, value):

@@ -94,14 +94,13 @@ class Gomoku:
     
     def runStep(self):
         mc=MCTS()
-        #if self.nowcol==1:
-        #    mc.run_cnt=2
         counts=mc.run(self.board.copy(), self.nowcol)
         #print(counts)
         if np.sum((self.board>0).astype(float)) >= 25:
             te=2
         else:
             te=1
+        #print(counts)
         counts = np.power(counts, te)
         counts=counts/counts.sum()
         #ret=np.argmax(counts)

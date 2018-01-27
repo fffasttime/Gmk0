@@ -74,3 +74,6 @@ mini_batch
 w    41         9
 b    44         6
 85% PASS
+
+1-27
+  optimzed tree search, 3x speed up
