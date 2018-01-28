@@ -69,7 +69,7 @@ mini_batch
 
 1-26
   iteration 0 ok
-  test shows decay_reward is important (=0.9)
+  test shows decay_reward is important (decay=0.85)
   weight_0 vs random
 w    41         9
 b    44         6
@@ -77,3 +77,10 @@ b    44         6
 
 1-27
   optimzed tree search, 3x speed up
+
+1-28
+  training I1, decay=0.88 le=0.05 step=16k
+  weight_1 vs weight_0
+w    29         21
+b    32         18
+61% PASS

@@ -5,7 +5,7 @@ import ctypes
 import operator
 from io import *
 
-from Search import MCTS
+import Search
 
 BSIZE=15
 BLSIZE=BSIZE*BSIZE
@@ -93,13 +93,15 @@ class Gomoku:
         return s
     
     def runStep(self):
-        mc=MCTS()
-        counts=mc.run(self.board.copy(), self.nowcol)
-        #print(counts)
-        if np.sum((self.board>0).astype(float)) >= 25:
-            te=2
+        mc=Search.MCTS()
+        if 1:
+            counts=mc.run(self.board.copy(), self.nowcol, Search.network)
         else:
-            te=1
+            counts=mc.run(self.board.copy(), self.nowcol, Search.network_opp)
+        if np.sum((self.board>0).astype(float)) >= 0:
+            te=2.5
+        else:
+            te=1.25
         #print(counts)
         counts = np.power(counts, te)
         counts=counts/counts.sum()

@@ -29,38 +29,41 @@ def max_pool(x):
 BSIZE = 15
 
 class TFProcess:
-    def __init__(self, is_training, load_model = False):
+    def __init__(self, parafile = None, trainingfile = None):
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
         config = tf.ConfigProto(gpu_options=gpu_options)
-        self.session = tf.Session(config=config)
 
-        # For exporting
-        self.weights = []
+        self.graph=tf.Graph()
+        self.session=tf.Session(config=config, graph=self.graph)
+        
+        with self.graph.as_default():
+            # For exporting
+            self.weights = []
 
-        # TF variables
-        #self.next_batch = next_batch
-        self.global_step = tf.Variable(0, name='global_step', trainable=False)
-        '''
-        self.x = next_batch[0] 
-        self.y_ = next_batch[1]
-        self.z_ = next_batch[2]
-        '''
-        self.x = tf.placeholder(tf.float32, [None, 2, BSIZE * BSIZE])
-        self.y_ =tf.placeholder(tf.float32, [None, BSIZE*BSIZE])
-        self.z_ =tf.placeholder(tf.float32, [None, 1])
+            # TF variables
+            #self.next_batch = next_batch
+            self.global_step = tf.Variable(0, name='global_step', trainable=False)
+            '''
+            self.x = next_batch[0] 
+            self.y_ = next_batch[1]
+            self.z_ = next_batch[2]
+            '''
+            self.x = tf.placeholder(tf.float32, [None, 2, BSIZE * BSIZE])
+            self.y_ =tf.placeholder(tf.float32, [None, BSIZE*BSIZE])
+            self.z_ =tf.placeholder(tf.float32, [None, 1])
 
-        self.training = tf.placeholder(tf.bool)
-        self.batch_norm_count = 0
-        self.y_conv, self.z_conv = self.construct_net(self.x)
-        self.y_policy=tf.nn.softmax(self.y_conv)
-        print("[Info] Model constructed")
-        if is_training:
-            self.init_training(load_model)
-        else:
-            self.init_forward(load_model)
+            self.training = tf.placeholder(tf.bool)
+            self.batch_norm_count = 0
+            self.y_conv, self.z_conv = self.construct_net(self.x)
+            self.y_policy=tf.nn.softmax(self.y_conv)
+            print("[Info] Model constructed")
+            if trainingfile is None:
+                self.init_forward(parafile)
+            else:
+                self.init_training(parafile, trainingfile)
 
-    def loadParas(self):
-        checkpoint_dir="./paras/I0/"
+    def loadParas(self, parafile):
+        checkpoint_dir=parafile
         #返回checkpoint文件中checkpoint的状态
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         #print(ckpt)
@@ -72,15 +75,15 @@ class TFProcess:
         else:
             print("[Error] Failed to find model")
 
-    def init_forward(self, load_model):
-        if (load_model):
-            self.saver = tf.train.Saver()
-            self.loadParas()
+    def init_forward(self, parafile):
+        if not parafile is None:
+            self.saver=tf.train.Saver()
+            self.loadParas(parafile)
         else:
             self.init = tf.global_variables_initializer()
             self.session.run(self.init)
         
-    def init_training(self, load_model):
+    def init_training(self, parafile, trainingfile):
         # Calculate loss on policy head
         cross_entropy = \
             tf.nn.softmax_cross_entropy_with_logits(labels=self.y_,
@@ -122,10 +125,11 @@ class TFProcess:
         self.train_writer = tf.summary.FileWriter(
             os.path.join(os.getcwd(), "logs/train"), self.session.graph)
         print("[Info] Training steps loaded")
-        self.saver = tf.train.Saver()
+        self.saver=tf.train.Saver()
+        self.save_file=trainingfile
         
-        if (load_model):
-            self.loadParas()
+        if not parafile is None:
+            self.loadParas(parafile)
         else:
             self.init = tf.global_variables_initializer()
             self.session.run(self.init)
@@ -198,7 +202,7 @@ class TFProcess:
             print("step {}, training accuracy={:g}%, mse={:g}".format(
                 steps, sum_accuracy*100.0, sum_mse))
             '''
-            path = os.path.join(os.getcwd(), "paras/I1/model")
+            path = os.path.join(os.getcwd(), self.save_file)
             save_path = self.saver.save(self.session, path, global_step=steps)
             print("Model saved in file: {}".format(save_path))
 
@@ -218,19 +222,8 @@ class TFProcess:
                 if isinstance(weights, str):
                     work_weights = tf.get_default_graph().get_tensor_by_name(weights)
                 elif weights.shape.ndims == 4:
-                    # Convolution weights need a transpose
-                    #
-                    # TF (kYXInputOutput)
-                    # [filter_height, filter_width, in_channels, out_channels]
-                    #
-                    # Leela/cuDNN/Caffe (kOutputInputYX)
-                    # [output, input, filter_size, filter_size]
                     work_weights = tf.transpose(weights, [3, 2, 0, 1])
                 elif weights.shape.ndims == 2:
-                    # Fully connected layers are [in, out] in TF
-                    #
-                    # [out, in] in Leela
-                    #
                     work_weights = tf.transpose(weights, [1, 0])
                 else:
                     # Biases, batchnorm etc

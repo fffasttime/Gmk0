@@ -12,7 +12,8 @@ from Gomoku import *
 
 print("[Info] Loading nn module")
 from nn import TFProcess
-network=TFProcess(False, True)
+network=TFProcess("./paras/I1/")
+#network_opp=TFProcess("./paras/I0/")
 print("[Info] nn module loaded")
 
 BIGVALUE=10000
@@ -27,11 +28,12 @@ class MCTS:
     run_cnt=120
     max_thread=6
     
-    def run(self,_board, _nowcol):
+    def run(self,_board, _nowcol, _net=network):
         self.board=_board
         self.nowcol=_nowcol
         self.startcol=_nowcol;
         self.size=0;
+        self.net=_net
         self.globalstep=0
         #vcnt, vsum, child, fa, prob(225f), move, movech(225i), isEnd
         self.node=[]
@@ -144,7 +146,7 @@ class MCTS:
                     simulatelist.append((nnode, maxmove))
                     self.dump_board(self.board_temp)
         if self.dump_c>0:
-            y,z=network.forward(self.raw_input[:self.dump_c])
+            y,z=self.net.forward(self.raw_input[:self.dump_c])
         for i, item in enumerate(simulatelist):
             self.back_leaf(item[0], item[1], y[i], z[i][0])
             
@@ -182,7 +184,7 @@ class MCTS:
             raw_input[0][0]=(lboard==2).astype(float)
             raw_input[0][1]=(lboard==1).astype(float)
         
-        y,z=network.forward(raw_input)
+        y,z=self.net.forward(raw_input)
         #print(z[0][0])
         return y.reshape([BLSIZE]), z[0][0]
 
