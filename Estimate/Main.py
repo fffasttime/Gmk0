@@ -94,6 +94,6 @@ def selfmatch():
             win+=0.5
     print(win)
 
-#selfmatch()
-selfplay()
+selfmatch()
+#selfplay()
 #runGUI()

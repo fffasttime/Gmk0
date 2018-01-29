@@ -84,3 +84,19 @@ b    44         6
 w    29         21
 b    32         18
 61% PASS
+  tringing I2, decay=0.88 le=0.05 step=16k
+
+1-29
+  weight_2 vs weight_1
+w    33         17
+b    32         18
+65% PASS
+  training I3, decay=0.88 le=0.05 step=16k
+weight_3 vs weight_2
+w    30         20
+b    29         21
+59% PASS
+weight_3 vs weight_1
+w    37         13
+b    37         13
+extra test ok

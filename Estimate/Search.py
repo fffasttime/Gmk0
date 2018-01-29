@@ -12,12 +12,12 @@ from Gomoku import *
 
 print("[Info] Loading nn module")
 from nn import TFProcess
-network=TFProcess("./paras/I1/")
-#network_opp=TFProcess("./paras/I0/")
+network=TFProcess("./paras/I4/")
+network_opp=TFProcess("./paras/I3/")
 print("[Info] nn module loaded")
 
 BIGVALUE=10000
-puct=2.5
+puct=1.6
 
 def add_dirlect_noise(policy, epsilon, alpha):
     dirlect=np.random.dirichlet([alpha] * BLSIZE)
@@ -95,6 +95,44 @@ class MCTS:
                         return pcol
         return 0
 
+    def judge_win_move(self, board, move, scol):
+        x0=move//BSIZE
+        y0=move%BSIZE
+        #row, col, diagonal
+        c1,c2,c3,c4=0,0,0,0
+        flag1,flag2,flag3,flag4=True, True, True, True
+        for i in range(1,5):
+            if flag1 and (y0+i>=BSIZE or board[x0][y0+i]!=scol):
+                flag1=False
+            if flag2 and (x0+i>=BSIZE or board[x0+i][y0]!=scol):
+                flag2=False
+            if flag3 and (x0+i>=BSIZE or y0+i>=BSIZE or board[x0+i][y0+i]!=scol):
+                flag3=False
+            if flag4 and (x0+i>=BSIZE or y0-i<0 or board[x0+i][y0-i]!=scol):
+                flag4=False
+            if flag1: c1+=1
+            if flag2: c2+=1
+            if flag3: c3+=1
+            if flag4: c4+=1
+        flag1,flag2,flag3,flag4=True, True, True, True
+        for i in range(1,5):
+            if flag1 and (y0-i<0 or board[x0][y0-i]!=scol):
+                flag1=False
+            if flag2 and (x0-i<0 or board[x0-i][y0]!=scol):
+                flag2=False
+            if flag3 and (x0-i<0 or y0-i<0 or board[x0-i][y0-i]!=scol):
+                flag3=False
+            if flag4 and (x0-i<0 or y0+i>=BSIZE or board[x0-i][y0+i]!=scol):
+                flag4=False
+            if flag1: c1+=1
+            if flag2: c2+=1
+            if flag3: c3+=1
+            if flag4: c4+=1
+        #link 5
+        if c1>=4 or c2>=4 or c3>=4 or c4>=4:
+            return True
+        return False
+            
     def get_value(self):
         ret= self.judge_win(self.board)
         if ret:
@@ -138,7 +176,8 @@ class MCTS:
                 self.node[cur][1]+=value
                 self.backprop(nnode, value)
             else:
-                r=self.judge_win(self.board_temp)
+                #r=self.judge_win(self.board_temp)
+                r=self.judge_win_move(self.board_temp, maxmove, self.nowcol%2+1)
                 if r:
                     self.expand_back_end(nnode, maxmove)
                 else:

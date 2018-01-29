@@ -18,7 +18,7 @@ def printb(board):
         print(str(board[i]))
 
 def strpos(mx, my):
-    return chr(mx+65)+str(my)
+    return chr(mx+65)+str(my+1)
 
 class Gomoku:
     def __init__(self):
@@ -94,14 +94,14 @@ class Gomoku:
     
     def runStep(self):
         mc=Search.MCTS()
-        if 1:
+        if self.nowcol==2:
             counts=mc.run(self.board.copy(), self.nowcol, Search.network)
         else:
             counts=mc.run(self.board.copy(), self.nowcol, Search.network_opp)
         if np.sum((self.board>0).astype(float)) >= 0:
             te=2.5
         else:
-            te=1.25
+            te=1.5
         #print(counts)
         counts = np.power(counts, te)
         counts=counts/counts.sum()
@@ -112,7 +112,7 @@ class Gomoku:
         return ret//15, ret%15
 
     def writeData(self,winner):
-        fout=open("data/selfdata.txt","a")
+        fout=open("data/I4/selfdata.txt","a")
         fout.write(str(len(self.movelist))+'\n')
         for i,x in enumerate(self.movelist):
             fout.write(str(x) + ' ')
