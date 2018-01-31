@@ -112,7 +112,7 @@ class Gomoku:
         return ret//15, ret%15
 
     def writeData(self,winner):
-        fout=open("data/I8/selfdata.txt","a")
+        fout=open("data/I9/selfdata.txt","a")
         fout.write(str(len(self.movelist))+'\n')
         for i,x in enumerate(self.movelist):
             fout.write(str(x) + ' ')

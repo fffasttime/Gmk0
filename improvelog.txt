@@ -115,3 +115,7 @@ training I6, decay=0.89 le=0.05 step=16k
 w    36         14
 b    32         18
 68% PASS
+training I7, decay=0.89 le=0.05 step=16k
+w    49         1
+b    35         15
+84% PASS
