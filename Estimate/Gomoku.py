@@ -92,16 +92,16 @@ class Gomoku:
             s+= str(i[0]) + ' ' + str(i[1]) + ' '
         return s
     
-    def runStep(self):
+    def runStep(self, low_te=False, reverse_col=0):
         mc=Search.MCTS()
-        if self.nowcol==2:
+        if reverse_col==0 or (reverse_col == self.nowcol):
             counts=mc.run(self.board.copy(), self.nowcol, Search.network)
         else:
             counts=mc.run(self.board.copy(), self.nowcol, Search.network_opp)
-        if np.sum((self.board>0).astype(float)) >= 0:
+        if low_te or np.sum((self.board>0).astype(float)) >= 16:
             te=2.5
         else:
-            te=1.5
+            te=1.6
         #print(counts)
         counts = np.power(counts, te)
         counts=counts/counts.sum()
@@ -112,7 +112,7 @@ class Gomoku:
         return ret//15, ret%15
 
     def writeData(self,winner):
-        fout=open("data/I4/selfdata.txt","a")
+        fout=open("data/I8/selfdata.txt","a")
         fout.write(str(len(self.movelist))+'\n')
         for i,x in enumerate(self.movelist):
             fout.write(str(x) + ' ')
@@ -135,10 +135,10 @@ class Gomoku:
         print("\ncol", winner, "win")
         self.writeData(winner)
 
-    def selfmatch(self):
+    def selfmatch(self, firstcol=1):
         winner=0
         while True:
-            mx,my = self.runStep()
+            mx,my = self.runStep(True, firstcol)
             print(strpos(mx, my), end=' ')
             if not self.setpiece(mx,my):
                 winner=self.nowcol % 2 +1

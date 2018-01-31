@@ -100,3 +100,18 @@ weight_3 vs weight_1
 w    37         13
 b    37         13
 extra test ok
+training I4, decay=0.88 le=0.05 step=16k
+weight_4 vs weight_3
+w    31         19
+b    43         7
+74% PASS
+1-30
+training I5, decay=0.88 le=0.05 step=16k
+weight_5 vs weight_4
+w    29         21
+b    30         20
+59% PASS
+training I6, decay=0.89 le=0.05 step=16k
+w    36         14
+b    32         18
+68% PASS
