@@ -29,6 +29,10 @@ def max_pool(x):
 BSIZE = 15
 
 class TFProcess:
+    """
+    :param parafile: load a model file, None for random initialize
+    :param trainingfile: save a trainined file, None for only forward
+    """
     def __init__(self, parafile = None, trainingfile = None):
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
         config = tf.ConfigProto(gpu_options=gpu_options)
@@ -61,88 +65,20 @@ class TFProcess:
                 self.init_forward(parafile)
             else:
                 self.init_training(parafile, trainingfile)
-
-    def loadParas(self, parafile):
-        checkpoint_dir=parafile
-        #返回checkpoint文件中checkpoint的状态
-        ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
-        #print(ckpt)
-        if ckpt and ckpt.model_checkpoint_path:#如果存在以前保存的模型
-            print('[Info] Restore the model from checkpoint %s' % ckpt.model_checkpoint_path)
-            # Restores from checkpoint
-            self.saver.restore(self.session, ckpt.model_checkpoint_path)#加载模型
-            #start_step = int(ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1])
-        else:
-            print("[Error] Failed to find model")
-
-    def init_forward(self, parafile):
-        if not parafile is None:
-            self.saver=tf.train.Saver()
-            self.loadParas(parafile)
-        else:
-            self.init = tf.global_variables_initializer()
-            self.session.run(self.init)
-        
-    def init_training(self, parafile, trainingfile):
-        # Calculate loss on policy head
-        cross_entropy = \
-            tf.nn.softmax_cross_entropy_with_logits(labels=self.y_,
-                                                    logits=self.y_conv)
-        self.policy_loss = tf.reduce_mean(cross_entropy)
-        
-        # Loss on value head
-        self.mse_loss = \
-            tf.reduce_mean(tf.squared_difference(self.z_, self.z_conv))
-
-        # Regularizer
-        regularizer = tf.contrib.layers.l2_regularizer(scale=0.0001)
-        reg_variables = tf.trainable_variables()
-        reg_term = \
-            tf.contrib.layers.apply_regularization(regularizer, reg_variables)
-
-        loss = 1.0 * self.policy_loss + 1.0 * self.mse_loss + reg_term
-
-        opt_op = tf.train.MomentumOptimizer(
-            learning_rate=0.05, momentum=0.9, use_nesterov=True)
-
-        self.update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-        with tf.control_dependencies(self.update_ops):
-            self.train_op = \
-                opt_op.minimize(loss, global_step=self.global_step)
-
-        correct_prediction = \
-            tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
-        correct_prediction = tf.cast(correct_prediction, tf.float32)
-        self.accuracy = tf.reduce_mean(correct_prediction)
-
-        self.avg_policy_loss = None
-        self.avg_mse_loss = None
-        self.time_start = None
-
-        # Summary part
-        self.test_writer = tf.summary.FileWriter(
-            os.path.join(os.getcwd(), "logs/test"), self.session.graph)
-        self.train_writer = tf.summary.FileWriter(
-            os.path.join(os.getcwd(), "logs/train"), self.session.graph)
-        print("[Info] Training steps loaded")
-        self.saver=tf.train.Saver()
-        self.save_file=trainingfile
-        
-        if not parafile is None:
-            self.loadParas(parafile)
-        else:
-            self.init = tf.global_variables_initializer()
-            self.session.run(self.init)
-    
-    def restore(self, file):
-        print("Restoring from {0}".format(file))
-        self.saver.restore(self.session, file)
-
+    """
+    :param input: numpyarray[-1, BLSIZE], nn input
+    :returns: y: policy, z:value
+    """
     def forward(self, input):
         y,z=self.session.run([self.y_policy, self.z_conv],\
                              feed_dict={self.x:input.reshape([-1,2,BSIZE*BSIZE]), self.training:False});
         return y,z
-    
+
+    """
+    :param batch: python list[3], training data
+    :returns: False for training ended
+
+    """
     def process(self, batch):
         # Run training for this batch
         policy_loss, mse_loss, _ = self.session.run(
@@ -231,6 +167,83 @@ class TFProcess:
                 nparray = work_weights.eval(session=self.session)
                 wt_str = [str(wt) for wt in np.ravel(nparray)]
                 file.write(" ".join(wt_str))
+    
+
+    def loadParas(self, parafile):
+        checkpoint_dir=parafile
+        #返回checkpoint文件中checkpoint的状态
+        ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+        #print(ckpt)
+        if ckpt and ckpt.model_checkpoint_path:#如果存在以前保存的模型
+            print('[Info] Restore the model from checkpoint %s' % ckpt.model_checkpoint_path)
+            # Restores from checkpoint
+            self.saver.restore(self.session, ckpt.model_checkpoint_path)#加载模型
+            #start_step = int(ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1])
+        else:
+            print("[Error] Failed to find model")
+
+    def init_forward(self, parafile):
+        if not parafile is None:
+            self.saver=tf.train.Saver()
+            self.loadParas(parafile)
+        else:
+            self.init = tf.global_variables_initializer()
+            self.session.run(self.init)
+        
+    def init_training(self, parafile, trainingfile):
+        # Calculate loss on policy head
+        cross_entropy = \
+            tf.nn.softmax_cross_entropy_with_logits(labels=self.y_,
+                                                    logits=self.y_conv)
+        self.policy_loss = tf.reduce_mean(cross_entropy)
+        
+        # Loss on value head
+        self.mse_loss = \
+            tf.reduce_mean(tf.squared_difference(self.z_, self.z_conv))
+
+        # Regularizer
+        regularizer = tf.contrib.layers.l2_regularizer(scale=0.0001)
+        reg_variables = tf.trainable_variables()
+        reg_term = \
+            tf.contrib.layers.apply_regularization(regularizer, reg_variables)
+
+        loss = 1.0 * self.policy_loss + 1.0 * self.mse_loss + reg_term
+
+        opt_op = tf.train.MomentumOptimizer(
+            learning_rate=0.05, momentum=0.9, use_nesterov=True)
+
+        self.update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        with tf.control_dependencies(self.update_ops):
+            self.train_op = \
+                opt_op.minimize(loss, global_step=self.global_step)
+
+        correct_prediction = \
+            tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
+        correct_prediction = tf.cast(correct_prediction, tf.float32)
+        self.accuracy = tf.reduce_mean(correct_prediction)
+
+        self.avg_policy_loss = None
+        self.avg_mse_loss = None
+        self.time_start = None
+
+        # Summary part
+        self.test_writer = tf.summary.FileWriter(
+            os.path.join(os.getcwd(), "logs/test"), self.session.graph)
+        self.train_writer = tf.summary.FileWriter(
+            os.path.join(os.getcwd(), "logs/train"), self.session.graph)
+        print("[Info] Training steps loaded")
+        self.saver=tf.train.Saver()
+        self.save_file=trainingfile
+        
+        if not parafile is None:
+            self.loadParas(parafile)
+        else:
+            self.init = tf.global_variables_initializer()
+            self.session.run(self.init)
+    
+    def restore(self, file):
+        print("Restoring from {0}".format(file))
+        self.saver.restore(self.session, file)
 
     def get_batchnorm_key(self):
         result = "bn" + str(self.batch_norm_count)

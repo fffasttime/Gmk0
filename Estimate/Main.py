@@ -51,7 +51,7 @@ def runGUI():
                 cy = round((p1.getX()-SPACE_SKIP/2)/SPACE_SKIP)
                 cx = round((p1.getY()-SPACE_SKIP/2)/SPACE_SKIP)
             else:
-                cx,cy=game.runStep()
+                cx,cy=game.runStep(True, 2)
                 #p1 = window.getMouse()
             if not inborder(cx,cy): continue
             if not game.setpiece(cx,cy): continue
@@ -77,23 +77,31 @@ def runGUI():
     window.close()
 
 def selfplay():
-    for i in range(2048):
+    for i in range(7012):
         print("Game",i)
         game = Gomoku()
         game.selfplay()
 
 def selfmatch():
-    win=0.0
+    win1, win2=0.0,0.0
     for i in range(50):
         print("Game",i)
         game = Gomoku()
-        winner=game.selfmatch()
+        winner=game.selfmatch(1)
         if winner==1:
-            win+=1
+            win1+=1
         elif winner==0:
-            win+=0.5
-    print(win)
+            win1+=0.5
+    for i in range(50):
+        print("Game",i)
+        game = Gomoku()
+        winner=game.selfmatch(2)
+        if winner==2:
+            win2+=1
+        elif winner==0:
+            win2+=0.5
+    print(win1, win2)
 
-selfmatch()
+#selfmatch()
 #selfplay()
-#runGUI()
+runGUI()
