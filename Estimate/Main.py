@@ -52,7 +52,7 @@ def runGUI():
                 cx = round((p1.getY()-SPACE_SKIP/2)/SPACE_SKIP)
             else:
                 cx,cy=game.runStep(True, 2)
-                #p1 = window.getMouse()
+                p1 = window.getMouse()
             if not inborder(cx,cy): continue
             if not game.setpiece(cx,cy): continue
             piece = Circle(Point(SPACE_SKIP*(cy+0.5),SPACE_SKIP*(cx+0.5)),8)
@@ -103,5 +103,5 @@ def selfmatch():
     print(win1, win2)
 
 #selfmatch()
-#selfplay()
-runGUI()
+selfplay()
+#runGUI()

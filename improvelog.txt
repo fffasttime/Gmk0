@@ -115,7 +115,18 @@ training I6, decay=0.89 le=0.05 step=16k
 w    36         14
 b    32         18
 68% PASS
+1-31
 training I7, decay=0.89 le=0.05 step=16k
 w    49         1
 b    35         15
 84% PASS
+training I8, decay=0.89 le=0.05 step=16k
+w    47         3
+b    26         24
+73% PASS
+2-1
+fpu frac changed to 1.3
+training I9, decay=0.89 le=0.05 step=16k
+w    36         14
+b    26         24
+62%PASS

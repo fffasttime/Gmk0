@@ -12,8 +12,8 @@ from Gomoku import *
 
 print("[Info] Loading nn module")
 from nn import TFProcess
-network=TFProcess("./paras/I8/")
-network_opp=TFProcess("./paras/I7/")
+network=TFProcess("./paras/I9/")
+network_opp=TFProcess("./paras/I8/")
 print("[Info] nn module loaded")
 
 BIGVALUE=10000
@@ -196,7 +196,7 @@ class MCTS:
             #use numpy to make judge faster
             fvis=sqrt(cur[0])
             ucbs=np.zeros([BLSIZE])
-            ucbs.fill(-cur[1]/cur[0]/1.5)
+            ucbs.fill(-cur[1]/cur[0]/1.3)
             vcnts=np.zeros([BLSIZE])
             for ch in cur[2]:
                 move=self.node[ch][5]
