@@ -70,7 +70,7 @@ int othercol(int col)
 
 void runGame()
 {
-	DataSeries<EposideData> datas;
+	//DataSeries<EposideData> datas;
 	Board gameboard = emptygameboard;
 	gamestep = 0;
 	print(gameboard);
