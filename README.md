@@ -1,7 +1,7 @@
 # Gmk0
 Learn playing gomoku from zero.
 
-Training hasn't started. This program hasn't been finished.
+Training is available. Test training has started.
 
 start Estimate/Main.py for selfplay
 
