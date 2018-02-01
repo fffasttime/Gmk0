@@ -62,9 +62,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MyGomoku.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Board.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -84,6 +81,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Evaluation.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Gmk0.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -22,8 +22,9 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{28D3C0BD-EBF2-44EA-957D-EEDD10986876}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>MyGomoku</RootNamespace>
+    <RootNamespace>cppGmk</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <ProjectName>cppGmk</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -113,7 +114,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>Copy "$(SolutionDir)Estimate\*.py" "$(TargetDir)"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -173,7 +175,7 @@
     <ClCompile Include="ConsolePrt.cpp" />
     <ClCompile Include="Evaluation.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="MyGomoku.cpp" />
+    <ClCompile Include="Gmk0.cpp" />
     <ClCompile Include="RunPython.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="stdafx.cpp">

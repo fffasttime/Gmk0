@@ -103,5 +103,5 @@ def selfmatch():
     print(win1, win2)
 
 #selfmatch()
-selfplay()
-#runGUI()
+#selfplay()
+runGUI()

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Estimate", "Estimate\Estimate.pyproj", "{F712F2D6-C2D3-464A-B032-F2DDB3669F8D}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "pygame", "pysrc\pygame.pyproj", "{F712F2D6-C2D3-464A-B032-F2DDB3669F8D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyGomoku", "MyGomoku\MyGomoku.vcxproj", "{28D3C0BD-EBF2-44EA-957D-EEDD10986876}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cppGmk", "cppsrc\cppGmk.vcxproj", "{28D3C0BD-EBF2-44EA-957D-EEDD10986876}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
