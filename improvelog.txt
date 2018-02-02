@@ -130,3 +130,24 @@ training I9, decay=0.89 le=0.05 step=16k
 w    36         14
 b    26         24
 62%PASS
+training I10, decay=0.89 le=0.05 step=16k
+w    45         5
+b    15         35 
+60%PASS
+2-2
+training I11, decay=0.89 le=0.05 step=16k
+w    43         7
+b    24         26
+67%PASS
+find huge bug in data_gathering, trying to fix it
+(Iteration 1-11 will strongly effected)
+bug fixed
+training I12, decay=0.89 le=0.05 step=16k
+w    43         7
+b    41         9
+84%PASS
+  weight_12 vs  SL   test
+w    36         14
+b    14         36
+good progress!
+weight_12 vs weight_12 w 19 : 31 b

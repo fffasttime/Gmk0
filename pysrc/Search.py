@@ -12,8 +12,8 @@ from Gomoku import *
 
 print("[Info] Loading nn module")
 from nn import TFProcess
-network=TFProcess("./paras/I9/")
-network_opp=TFProcess("./paras/I8/")
+network=TFProcess("./paras/I12/")
+#network_opp=TFProcess("./paras/I12/")
 print("[Info] nn module loaded")
 
 BIGVALUE=10000

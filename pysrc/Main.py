@@ -39,7 +39,7 @@ def runGUI():
         #game.initoutAI()
         col=1
         user_inputw=False
-        user_inputb=False
+        user_inputb=True
         while True:
             cx,cy=0,0
             #game.runAI()
@@ -51,8 +51,8 @@ def runGUI():
                 cy = round((p1.getX()-SPACE_SKIP/2)/SPACE_SKIP)
                 cx = round((p1.getY()-SPACE_SKIP/2)/SPACE_SKIP)
             else:
-                cx,cy=game.runStep(True, 2)
-                p1 = window.getMouse()
+                cx,cy=game.runStep(True, 1)
+                #p1 = window.getMouse()
             if not inborder(cx,cy): continue
             if not game.setpiece(cx,cy): continue
             piece = Circle(Point(SPACE_SKIP*(cy+0.5),SPACE_SKIP*(cx+0.5)),8)
@@ -77,7 +77,7 @@ def runGUI():
     window.close()
 
 def selfplay():
-    for i in range(7012):
+    for i in range(10548):
         print("Game",i)
         game = Gomoku()
         game.selfplay()
@@ -102,6 +102,7 @@ def selfmatch():
             win2+=0.5
     print(win1, win2)
 
+
 #selfmatch()
-#selfplay()
-runGUI()
+selfplay()
+#runGUI()
