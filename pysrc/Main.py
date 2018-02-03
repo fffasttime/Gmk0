@@ -38,8 +38,8 @@ def runGUI():
         #game.selfplay()
         #game.initoutAI()
         col=1
-        user_inputw=False
-        user_inputb=True
+        user_inputw=True
+        user_inputb=False
         while True:
             cx,cy=0,0
             #game.runAI()

@@ -12,8 +12,8 @@ from Gomoku import *
 
 print("[Info] Loading nn module")
 from nn import TFProcess
-network=TFProcess("./paras/I12/")
-#network_opp=TFProcess("./paras/I12/")
+network=TFProcess("./paras/I14/")
+network_opp=TFProcess("./paras/I14/")
 print("[Info] nn module loaded")
 
 BIGVALUE=10000
@@ -231,7 +231,7 @@ class MCTS:
         probs,value=self.run_net_1()
         value=-value
         if 1:
-            probs=add_dirlect_noise(probs, 0.25, 0.02)
+            probs=add_dirlect_noise(probs, 0.25, 0.03)
         node=[1, value, [], -1, probs, -1, np.zeros(BLSIZE, int), False]
         self.node.append(node)
 

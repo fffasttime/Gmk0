@@ -101,7 +101,7 @@ class Gomoku:
         if low_te or np.sum((self.board>0).astype(float)) >= 16:
             te=2.5
         else:
-            te=1.6
+            te=1.4
         #print(counts)
         counts = np.power(counts, te)
         counts=counts/counts.sum()
@@ -112,7 +112,7 @@ class Gomoku:
         return ret//15, ret%15
 
     def writeData(self,winner):
-        fout=open("data/I12/selfdata.txt","a")
+        fout=open("data/I15/selfdata.txt","a")
         fout.write(str(len(self.movelist))+'\n')
         for i,x in enumerate(self.movelist):
             fout.write(str(x) + ' ')

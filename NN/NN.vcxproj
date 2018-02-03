@@ -20,11 +20,10 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{28D3C0BD-EBF2-44EA-957D-EEDD10986876}</ProjectGuid>
+    <ProjectGuid>{3EA2E6D4-E737-4540-963E-B442168A3E48}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>cppGmk</RootNamespace>
+    <RootNamespace>NN</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
-    <ProjectName>cppGmk</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -76,10 +75,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <IncludePath>C:\Users\huanght\AppData\Local\Programs\Python\Python36\include;C:\Users\huanght\AppData\Local\Programs\Python\Python36\Lib\site-packages\numpy\core\include\numpy;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\huanght\AppData\Local\Programs\Python\Python36\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -89,7 +84,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -102,21 +97,16 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -156,27 +146,33 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Board.h" />
-    <ClInclude Include="cl2.hpp" />
-    <ClInclude Include="ConsolePrt.h" />
-    <ClInclude Include="Evaluation.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameData.h" />
-    <ClInclude Include="net_config.h" />
-    <ClInclude Include="RunPython.h" />
-    <ClInclude Include="Search.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="GTP.h" />
+    <ClInclude Include="Im2Col.h" />
+    <ClInclude Include="Network.h" />
+    <ClInclude Include="NNCache.h" />
+    <ClInclude Include="nn_cpp.h" />
+    <ClInclude Include="OpenCL.h" />
+    <ClInclude Include="OpenCLScheduler.h" />
+    <ClInclude Include="Random.h" />
+    <ClInclude Include="SMP.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Tuner.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Board.cpp" />
-    <ClCompile Include="ConsolePrt.cpp" />
-    <ClCompile Include="Evaluation.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Gmk0.cpp" />
-    <ClCompile Include="RunPython.cpp" />
-    <ClCompile Include="Search.cpp" />
+    <ClCompile Include="Example.cpp" />
+    <ClCompile Include="GTP.cpp" />
+    <ClCompile Include="Network.cpp" />
+    <ClCompile Include="NN.cpp" />
+    <ClCompile Include="NNCache.cpp" />
+    <ClCompile Include="nn_cpp.cpp" />
+    <ClCompile Include="OpenCL.cpp" />
+    <ClCompile Include="OpenCLScheduler.cpp" />
+    <ClCompile Include="Random.cpp" />
+    <ClCompile Include="SMP.cpp" />
+    <ClCompile Include="Tuner.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

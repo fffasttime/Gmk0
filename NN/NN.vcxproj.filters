@@ -21,63 +21,81 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Board.h">
+    <ClInclude Include="config.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ConsolePrt.h">
+    <ClInclude Include="GTP.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="Im2Col.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Search.h">
+    <ClInclude Include="Network.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
+    <ClInclude Include="nn_cpp.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GameData.h">
+    <ClInclude Include="NNCache.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="RunPython.h">
+    <ClInclude Include="OpenCL.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Evaluation.h">
+    <ClInclude Include="OpenCLScheduler.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="cl2.hpp">
+    <ClInclude Include="Random.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="net_config.h">
+    <ClInclude Include="SMP.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Tuner.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Board.cpp">
+    <ClCompile Include="NN.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ConsolePrt.cpp">
+    <ClCompile Include="Example.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
+    <ClCompile Include="GTP.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Search.cpp">
+    <ClCompile Include="Network.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="nn_cpp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NNCache.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenCL.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenCLScheduler.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SMP.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Tuner.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="RunPython.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Evaluation.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Gmk0.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -150,4 +150,11 @@ b    41         9
 w    36         14
 b    14         36
 good progress!
-weight_12 vs weight_12 w 19 : 31 b
+training I13, decay=0.9 le=0.05 step=16k
+w    41         9
+b    48         2
+89%PASS
+training I14, decay=0.9 le=0.05 step=16k
+w    35         15
+b    44         6
+79%PASS
