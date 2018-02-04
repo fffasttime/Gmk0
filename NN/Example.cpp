@@ -7,5 +7,6 @@ int main() {
 	input.resize(INPUT_CHANNELS);
 	auto output = test.forward(input);
 	std::cout << output.first.size() << std::endl;
+	std::system("pause");
 	return 0;
 }

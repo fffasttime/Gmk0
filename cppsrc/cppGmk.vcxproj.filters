@@ -45,13 +45,7 @@
     <ClInclude Include="Evaluation.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="cl2.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="net_config.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Tuner.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,5 +74,8 @@
     <ClCompile Include="Gmk0.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

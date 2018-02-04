@@ -12,12 +12,11 @@ from Gomoku import *
 
 print("[Info] Loading nn module")
 from nn import TFProcess
-network=TFProcess("./paras/I14/")
-network_opp=TFProcess("./paras/I14/")
+network=TFProcess("./paras/I16/")
+network_opp=TFProcess("./paras/I16/")
 print("[Info] nn module loaded")
 
 BIGVALUE=10000
-puct=1.6
 
 def add_dirlect_noise(policy, epsilon, alpha):
     dirlect=np.random.dirichlet([alpha] * BLSIZE)
@@ -25,6 +24,7 @@ def add_dirlect_noise(policy, epsilon, alpha):
     return policy
 
 class MCTS:
+    puct=0.8
     run_cnt=120
     max_thread=6
     
@@ -202,7 +202,7 @@ class MCTS:
                 move=self.node[ch][5]
                 ucbs[move]=self.node[ch][1]/self.node[ch][0]
                 vcnts[move]=self.node[ch][0]
-            ucbs += puct * sqrt(cur[0]) * cur[4] / (1 + vcnts)
+            ucbs += self.puct * sqrt(cur[0]) * cur[4] / (1 + vcnts)
             #delete invalid move
             ucbs-=(self.board>0).reshape([BLSIZE]).astype(float)*BIGVALUE
             maxmove=np.argmax(ucbs)

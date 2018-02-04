@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include "GameState.h"
+//#include "GameState.h"
 
 extern int cfg_num_threads;
 extern int cfg_max_playouts;

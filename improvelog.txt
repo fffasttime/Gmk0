@@ -147,9 +147,10 @@ w    43         7
 b    41         9
 84%PASS
   weight_12 vs  SL   test
-w    36         14
+w    14         36
 b    14         36
 good progress!
+2-3
 training I13, decay=0.9 le=0.05 step=16k
 w    41         9
 b    48         2
@@ -158,3 +159,29 @@ training I14, decay=0.9 le=0.05 step=16k
 w    35         15
 b    44         6
 79%PASS
+2-4
+training I15, decay=0.92 le=0.05 step=16k
+w    35         15
+b    41         9
+76%PASS
+training I16, decay=0.93 le=0.05 step=16k
+w    36         14
+b    45         5
+81%PASS
+  weight_16 vs  SL   test
+w    23         27
+b    27         23
+50% maybe overfitting
+  weight_16_puct=0.8 vs weight_16_puct=1.6
+w    26         24
+b    37         13
+  weight_16_puct=1.6 vs weight_16_puct=1.6
+w    10         40
+b    47         3
+  weight_16_puct=1.2 vs weight_16_puct=1.6
+w    12         38
+b    36         14
+  weight_16_puct=0.5 vs weight_16_puct=1.6
+w    14         36
+b    32         18
+puct now set to 0.8
