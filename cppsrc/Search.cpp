@@ -60,7 +60,7 @@ void MCTS::unmake_move(int move)
 
 void MCTS::solve(BoardWeight &result)
 {
-	int rcnt = 1;
+	int rcnt = 120;
 	for (int i = 0; i < rcnt; i++)
 	{
 		int cur = root;
@@ -99,17 +99,7 @@ void MCTS::solve(BoardWeight &result)
 		//std::cout << tr[ch].move << ' ' << tr[ch].cnt << ' ' << tr[ch].sumv / tr[ch].cnt << '\n';
 	}
 }
-#if 0
-Val MCTS::getEndVal(const Board &map, int col)
-{
-	int cnt[3];
-	//map.countPiece(cnt); int co1 = col_f(col);
-	//if (cnt[col]>cnt[co1]) return 1.0f;
-	//else if (cnt[col] == cnt[co1]) return 0.5f;
-	//else return 0.0f;
-	return (tanh((cnt[col] - cnt[col]) / 16.0) + 1) / 2;
-}
-#endif
+
 Val MCTS::getValue()
 {
 	int result = judgeWin(board);
@@ -118,28 +108,12 @@ Val MCTS::getValue()
 	return 0.0f;
 }
 
-void MCTS::getPolicy(int cur, BoardWeight &result)
-{
-	int x = tr[cur].move / 15, y = tr[cur].move % 15;
-	int availcnt = 0;
-	for (int i = x - 3; i <= x + 3; i++)
-		for (int j = y - 3; j <= y + 3; j++)
-			if (inBorder(i, j) && board(i, j) == 0)
-				availcnt++;
-	for (int i = 0; i < BLSIZE; i++)
-		result[i] = 0;
-	for (int i = x - 3; i <= x + 3; i++)
-		for (int j = y - 3; j <= y + 3; j++)
-			if (inBorder(i, j) && board(i, j) == 0)
-				result[i * 15 + j] = 1.0f / availcnt;
-}
-
 void MCTS::expand(int cur,const RawOutput &output)
 {
 	//BoardWeight prob;
 	//getPolicy(cur, prob);
 	for (int i = 0; i < BLSIZE; i++)
-		if (output.p[i] > 1e-3)
+		if (board[i]==0)
 		{
 			tr[cur].ch.push_back(trcnt);
 			tr[trcnt].sumv = 0;

@@ -36,15 +36,13 @@ private:
 private:
 	void make_move(int move);
 	void unmake_move(int move);
+	Val getValue();
+	void expand(int cur,const RawOutput &output);
+	void simulation_back(int cur);
 public:
 	MCTS(const Board &_board, int _col, int lastmove);
 	void solve(BoardWeight &result);
 	void solvePolicy(Val te);
-	//Val getEndVal();
-	Val getValue();
-	void getPolicy(int cur, BoardWeight &result);
-	void expand(int cur,const RawOutput &output);
-	void simulation_back(int cur);
 	~MCTS()
 	{
 		delete[] tr;
