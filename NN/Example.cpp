@@ -10,3 +10,8 @@ int main() {
 	std::system("pause");
 	return 0;
 }
+
+int testforward()
+{
+
+}

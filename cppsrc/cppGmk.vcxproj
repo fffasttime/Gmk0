@@ -137,7 +137,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -162,7 +162,6 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="net_config.h" />
-    <ClInclude Include="RunPython.h" />
     <ClInclude Include="Search.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Utils.h" />
@@ -173,12 +172,16 @@
     <ClCompile Include="Evaluation.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Gmk0.cpp" />
-    <ClCompile Include="RunPython.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NN\NN.vcxproj">
+      <Project>{3ea2e6d4-e737-4540-963e-b442168a3e48}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

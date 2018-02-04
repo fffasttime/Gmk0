@@ -39,9 +39,6 @@
     <ClInclude Include="GameData.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="RunPython.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Evaluation.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -63,9 +60,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="RunPython.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Evaluation.cpp">
