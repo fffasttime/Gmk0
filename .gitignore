@@ -11,6 +11,7 @@ pysrc/data/
 *.user
 *.userosscache
 *.sln.docstates
+!cppsrc/NN/I17.txt
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
