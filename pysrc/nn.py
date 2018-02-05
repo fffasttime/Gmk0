@@ -156,7 +156,7 @@ class TFProcess:
                 work_weights = None
                 # Keyed batchnorm weights
                 if isinstance(weights, str):
-                    work_weights = tf.get_default_graph().get_tensor_by_name(weights)
+                    work_weights = self.graph.get_tensor_by_name(weights)
                 elif weights.shape.ndims == 4:
                     work_weights = tf.transpose(weights, [3, 2, 0, 1])
                 elif weights.shape.ndims == 2:

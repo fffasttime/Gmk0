@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="NN">
+      <UniqueIdentifier>{d9c9f56e-7068-432b-992c-ca81c3c38603}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -33,9 +36,6 @@
     <ClInclude Include="Search.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="GameData.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -43,6 +43,57 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="net_config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\config.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\GTP.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\Im2Col.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\Network.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\nn_cpp.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\NNCache.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\OpenCL.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\OpenCLScheduler.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\Random.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\SMP.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\stdafx.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\targetver.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\ThreadPool.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\Tuner.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\Utils.h">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="NN\CL\cl2.hpp">
+      <Filter>NN</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,13 +110,46 @@
     <ClCompile Include="Search.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Utils.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Evaluation.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Gmk0.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\GTP.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\Network.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\nn_cpp.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\NNCache.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\OpenCL.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\OpenCLScheduler.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\Random.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\SMP.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\stdafx.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\Tuner.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="NN\Utils.cpp">
+      <Filter>NN</Filter>
+    </ClCompile>
+    <ClCompile Include="Common.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

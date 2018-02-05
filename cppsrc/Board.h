@@ -1,5 +1,5 @@
 #pragma once
-#include "Utils.h"
+#include "Common.h"
 
 bool inBorder(Coord a);
 bool inBorder(int x, int y);

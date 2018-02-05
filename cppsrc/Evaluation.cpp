@@ -1,5 +1,7 @@
 #include "Evaluation.h"
 
+NN *network;
+
 RawInput::RawInput(Board &board)
 {
 	for (int i = 0; i < BLSIZE; i++)
@@ -22,7 +24,30 @@ RawInput::RawInput(Board &board)
 
 void getEvaluation(Board &board, RawOutput &output)
 {
-	output.v = 0;
+	Network::NNPlanes input;
+	input.resize(2);
 	for (int i = 0; i < BLSIZE; i++)
-		output.p[i] = 1.0f / BLSIZE;
+		if (board[i] == C_B)
+		{
+			input[0][i] = 1;
+			input[1][i] = 0;
+		}
+		else if (board[i] == C_W)
+		{
+			input[0][i] = 0;
+			input[1][i] = 1;
+		}
+		else
+		{
+			input[0][i] = 0;
+			input[1][i] = 0;
+		}
+
+	auto ret = network->forward(input);
+	float sum = 0;
+	for (int i = 0; i<BLSIZE; i++)
+	{
+		output.p[i] = ret.first[i];
+	}
+	output.v = ret.second;
 }

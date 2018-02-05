@@ -38,8 +38,8 @@ def runGUI():
         #game.selfplay()
         #game.initoutAI()
         col=1
-        user_inputw=False
-        user_inputb=True
+        user_inputw=True
+        user_inputb=False
         while True:
             cx,cy=0,0
             #game.runAI()
@@ -55,6 +55,8 @@ def runGUI():
                 #p1 = window.getMouse()
             if not inborder(cx,cy): continue
             if not game.setpiece(cx,cy): continue
+            if user_inputw and col==2 or user_inputb and col==1:
+                game.dumpData(cx*BSIZE+cy, np.zeros(BLSIZE))
             piece = Circle(Point(SPACE_SKIP*(cy+0.5),SPACE_SKIP*(cx+0.5)),8)
             if col==2: piece.setFill('white')
             else: piece.setFill('black')
@@ -69,7 +71,7 @@ def runGUI():
         message.setSize(30)
         message.setFill('white')
         message.draw(window)
-        #game.writeData(col)
+        game.writeData(col)
         try:
             window.getMouse()
         except Exception as e:

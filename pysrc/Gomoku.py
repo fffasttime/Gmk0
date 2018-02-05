@@ -91,6 +91,10 @@ class Gomoku:
         for i in movelist:
             s+= str(i[0]) + ' ' + str(i[1]) + ' '
         return s
+
+    def dumpData(self, move, counts):
+        self.decisionlist.append(counts)
+        self.movelist.append(move)
     
     def runStep(self, low_te=False, reverse_col=0):
         mc=Search.MCTS()
@@ -107,12 +111,11 @@ class Gomoku:
         counts=counts/counts.sum()
         #ret=np.argmax(counts)
         ret=(random.choices(range(225),counts))[0]
-        self.decisionlist.append(counts)
-        self.movelist.append(ret)
+        self.dumpData(ret, counts)
         return ret//15, ret%15
 
     def writeData(self,winner):
-        fout=open("data/I17/selfdata.txt","a")
+        fout=open("data/I18/selfdata.txt","a")
         fout.write(str(len(self.movelist))+'\n')
         for i,x in enumerate(self.movelist):
             fout.write(str(x) + ' ')

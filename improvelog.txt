@@ -185,3 +185,8 @@ b    36         14
 w    14         36
 b    32         18
 puct now set to 0.8
+2-5
+training I17, decay=0.94 le=0.05 step=16k
+w    35         15
+b    44         6
+79%PASS

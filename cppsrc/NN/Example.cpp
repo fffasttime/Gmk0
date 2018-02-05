@@ -11,7 +11,7 @@ int main() {
 	return 0;
 }
 
-int testforward()
+void testforward()
 {
 
 }

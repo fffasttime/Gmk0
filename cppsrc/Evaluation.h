@@ -1,7 +1,10 @@
 #pragma once
-#include "Utils.h"
+#include "Common.h"
 #include "Board.h"
+#include "NN/nn_cpp.h"
 #include <array>
+
+extern NN *network;
 
 struct RawInput
 {
