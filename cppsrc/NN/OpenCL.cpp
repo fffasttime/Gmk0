@@ -57,8 +57,8 @@ static std::string sourceCode_convolve3 = R"(
 __kernel void in_transform(__global net_t *in, __global float *V,
                            const int C, const int Cpad,
                            const int Ppad) {
-    const int W = 7;
-    const int H = 7;
+    const int W = 15;
+    const int H = 15;
     const int WTILES = (W + 1) / 2;
     const int P = WTILES*WTILES;
 
@@ -135,8 +135,8 @@ __kernel void in_transform(__global net_t *in, __global float *V,
 
 __kernel void out_transform(__global float *M, __global net_t *Y,
                             const int K, const int Kpad, const int Ppad) {
-    const int W = 7;
-    const int H = 7;
+    const int W = 15;
+    const int H = 15;
     const int WTILES = (W + 1) / 2;
     const int P = WTILES * WTILES;
 
@@ -194,8 +194,8 @@ __kernel void out_transform_fused_bn(__global float *M,
                                      __global const net_t * residual,
                                      __constant const net_t * means,
                                      __constant const net_t * stddivs) {
-    const int W = 7;
-    const int H = 7;
+    const int W = 15;
+    const int H = 15;
     const int WTILES = (W + 1) / 2;
     const int P = WTILES * WTILES;
 
