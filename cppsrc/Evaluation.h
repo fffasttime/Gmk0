@@ -19,4 +19,4 @@ struct RawOutput
 	float v;
 };
 
-void getEvaluation(Board &board, RawOutput &output);
+void getEvaluation(Board &board, int col, RawOutput &output);

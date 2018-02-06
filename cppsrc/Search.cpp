@@ -60,8 +60,8 @@ void MCTS::unmake_move(int move)
 
 void MCTS::solve(BoardWeight &result)
 {
-	int rcnt = 120;
-	for (int i = 0; i < rcnt; i++)
+	int playout = 121;
+	for (int i = 0; i < playout; i++)
 	{
 		int cur = root;
 		while (1)
@@ -73,7 +73,7 @@ void MCTS::solve(BoardWeight &result)
 			{
 				Val ucb;
 				if (tr[ch].cnt == 0)
-					ucb = UCBC*tr[ch].policy*sqrtf((Val)tr[cur].cnt);
+					ucb = tr[cur].sumv / tr[cur].cnt / 1.3 + UCBC * tr[ch].policy*sqrtf((Val)tr[cur].cnt);
 				else
 					ucb = tr[ch].sumv / tr[ch].cnt + UCBC*tr[ch].policy*sqrtf((Val)tr[cur].cnt) / (1 + tr[ch].cnt);
 				if (ucb > maxv)
@@ -135,7 +135,7 @@ void MCTS::simulation_back(int cur)
 	{
 		//val = getValue();
 		RawOutput result;
-		getEvaluation(board, result);
+		getEvaluation(board, nowcol, result);
 		val = result.v;
 		if (judgeWin(board) == 0)
 			expand(cur, result);
@@ -197,7 +197,7 @@ Coord run(const Board &gameboard, int nowcol, Coord lastmove)
 	int r = rand() % 225;
 	return { r / 15,r % 15 };
 #else
-	if (!inBorder(lastmove)) return { 7,7 };
+	//if (!inBorder(lastmove)) return { 7,7 };
 	MCTS mcts(gameboard,nowcol,lastmove.p());
 	BoardWeight result;
 	mcts.solve(result);

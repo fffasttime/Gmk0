@@ -22,25 +22,25 @@ RawInput::RawInput(Board &board)
 		}
 }
 
-void getEvaluation(Board &board, RawOutput &output)
+void getEvaluation(Board &board, int col, RawOutput &output)
 {
 	Network::NNPlanes input;
 	input.resize(2);
 	for (int i = 0; i < BLSIZE; i++)
-		if (board[i] == C_B)
+		if (board[i] == 0)
+		{
+			input[0][i] = 0;
+			input[1][i] = 0;
+		}
+		else if (board[i] == col)
 		{
 			input[0][i] = 1;
 			input[1][i] = 0;
 		}
-		else if (board[i] == C_W)
-		{
-			input[0][i] = 0;
-			input[1][i] = 1;
-		}
 		else
 		{
 			input[0][i] = 0;
-			input[1][i] = 0;
+			input[1][i] = 1;
 		}
 
 	auto ret = network->forward(input);

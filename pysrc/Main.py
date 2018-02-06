@@ -71,7 +71,6 @@ def runGUI():
         message.setSize(30)
         message.setFill('white')
         message.draw(window)
-        game.writeData(col)
         try:
             window.getMouse()
         except Exception as e:
