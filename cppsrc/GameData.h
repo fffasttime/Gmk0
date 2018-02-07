@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Common.h"
+#include "Board.h"
+#include <iomanip>
 #include <vector>
 #include <array>
 
@@ -73,7 +75,7 @@ struct EposideData
 struct EposideTrainingData
 {
 	typedef unsigned char ubyte;
-	typedef std::array<float, POLICY_MAX_EXPANDS> StepPolicy;
+	typedef BoardWeight StepPolicy;
 	int stepcount;
 	std::vector<int> moves;
 	std::vector<StepPolicy> policy;
@@ -101,13 +103,17 @@ struct EposideTrainingData
 	std::string toString()
 	{
 		std::stringstream ss;
-		ss << stepcount << ' ' << z;
+		ss << stepcount;
 		for (int i=0;i<stepcount;i++)
 		{
 			ss << ' '<< moves[i];
 			for (int j = 0; j < POLICY_MAX_EXPANDS; j++)
-				ss << ' '<< policy[i][j];
+				if (policy[i][j] == 0.0f)
+					ss << " 0";
+				else
+					ss << ' ' << std::fixed<< std::setprecision(6) << policy[i][j];
 		}
+		ss << ' '<<z;
 		std::string s; std::getline(ss,s);
 		return s;
 	}
@@ -187,9 +193,12 @@ struct DataSeries
 			datas.push_back(data);
 		}
 	}
-	void writeString(std::string filename)
+	void writeString(std::string filename, bool app = true)
 	{
-		std::ofstream out(filename);
+		auto mode = std::ios::out;
+		if(app)
+			mode=std::ios::app;
+		std::ofstream out(filename, mode);
 		out << count << ' ';
 		for (auto &data : datas)
 			data.writeString(out);

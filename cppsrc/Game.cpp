@@ -23,14 +23,12 @@ Board emptygameboard = {
 		 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ,
 		 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ,
 		 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  } };
-Board gameboard;
 
 void swap3(Board &board)
 {
-	for (int i = 0; i < BSIZE; i++)
-		for (int j = 0; j < BSIZE; j++)
-			if (board(i, j))
-				board(i, j) = othercol(board(i, j));
+	for (int i = 0; i < BLSIZE; i++)
+		if (board[i])
+			board[i] = board[i] % 2 + 1;
 }
 
 int judgeWin(Board &board)
@@ -55,24 +53,22 @@ int judgeWin(Board &board)
 	return 0;
 }
 
-int gamestep;
-
-void setPiece(Board& board, Coord &s, int col)
+void Game::make_move(Coord pos)
 {
-	board(s) = col;
+	gameboard(pos) = nowcol;
+	nowcol = nowcol % 2 + 1;
 }
 
-int nowcol = 1;
-int othercol(int col)
+void Game::reset()
 {
-	return (col & 1) + 1;
-}
-
-void runGame(Player &player1, Player &player2)
-{
-	//DataSeries<EposideData> datas;
-	Board gameboard = emptygameboard;
+	gameboard = emptygameboard;
 	gamestep = 0;
+	nowcol = 1;
+}
+
+void Game::runGame(Player &player1, Player &player2)
+{
+	reset();
 	print(gameboard);
 	vector<int> history;
 	while (gamestep < BLSIZE)
@@ -82,7 +78,7 @@ void runGame(Player &player1, Player &player2)
 			c = player1.run(gameboard, nowcol);
 		else
 			c = player2.run(gameboard, nowcol);
-		setPiece(gameboard, c, nowcol);
+		make_move(c);
 		history.push_back(c.p());
 		print(gameboard);
 		if (judgeWin(gameboard))
@@ -93,34 +89,62 @@ void runGame(Player &player1, Player &player2)
 				printf("\nBlack win!");
 			break;
 		}
-		nowcol = othercol(nowcol);
-		//Sleep(500);
 		gamestep++;
 	}
 	printf("\nDRAW!");
-	//datas.dump(EposideData(history, nowcol));
-	//datas.writeString("gomoku.log");
 }
 
-void runRecord(const vector<int> &moves)
+void Game::runGame_selfplay(Player &player)
 {
-	Board gameboard = emptygameboard;
-	gamestep = 0;
+	reset();
+	vector<int> history;
+	vector<BoardWeight> policy;
+	print(gameboard);
+	while (gamestep < BLSIZE)
+	{
+		Coord c = player.run(gameboard, nowcol);
+		make_move(c);
+		history.push_back(c.p());
+		policy.push_back(player.getlastPolicy());
+		print(gameboard);
+		if (judgeWin(gameboard))
+			break;
+		gamestep++;
+	}
+	int winner = nowcol % 2 + 1;
+	if (gamestep == BLSIZE) winner = 0;
+	EposideTrainingData data(history, policy , winner);
+	ofstream out("selfplaydata.txt", std::ios::app);
+	data.writeString(out);
+}
+
+void Game::selfplay(Player &player)
+{
+	int play_counts = 4096;
+	for (int i = 0; i < play_counts; i++)
+	{
+		std::cout << "game " << i << '\n';
+		runGame_selfplay(player);
+	}
+}
+
+void Game::runRecord(const vector<int> &moves)
+{
+	reset();
 	print(gameboard);
 	for (auto move : moves)
 	{
 		Coord c(move);
-		setPiece(gameboard, c, nowcol);
+		make_move(c);
 
 		print(gameboard);
 		Sleep(500);
 
-		nowcol = othercol(nowcol);
 		gamestep++;
 	}
 }
 
-void runFromFile(string filename)
+void Game::runFromFile(string filename)
 {
 	DataSeries<EposideData> datas;
 	datas.readString(filename);

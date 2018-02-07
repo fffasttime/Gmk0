@@ -50,7 +50,7 @@ private:
 public:
 	MCTS(const Board &_board, int _col, NN *_network, int _playouts);
 	void solve(BoardWeight &result);
-	int solvePolicy(Val te);
+	int solvePolicy(Val te, BoardWeight &policy);
 	~MCTS()
 	{
 		delete[] tr;
@@ -69,6 +69,7 @@ private:
 	float cfg_temprature2;
 	int cfg_temprature_moves;
 
+	BoardWeight policy;
 public:
 	Player(string file_network, 
 		int _playouts = 400,
@@ -90,4 +91,8 @@ public:
 
 	Coord run(const Board &gameboard, int nowcol);
 
+	const BoardWeight& getlastPolicy()
+	{
+		return policy;
+	}
 };

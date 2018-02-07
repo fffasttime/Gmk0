@@ -179,22 +179,21 @@ void MCTS::simulation_back(int cur)
 	}
 }
 
-int MCTS::solvePolicy(Val te)
+int MCTS::solvePolicy(Val te, BoardWeight &policy)
 {
-	BoardWeight v;
-	solve(v);
+	solve(policy);
 	//Tempearture
 	if (te < 0.2) //t-->0
 	{
 		int maxc; Val maxv=-FLOAT_INF;
 		for (int i = 0; i < BLSIZE; i++)
-			if (maxv < v[i])
+			if (maxv < policy[i])
 			{
 				maxc = i;
-				maxv = v[i];
+				maxv = policy[i];
 			}
-		for (int i = 0; i < BLSIZE; i++) v[i] = 0;
-		v[maxc] = 1;
+		for (int i = 0; i < BLSIZE; i++) policy[i] = 0;
+		policy[maxc] = 1;
 		return maxc;
 	}
 	else
@@ -202,12 +201,12 @@ int MCTS::solvePolicy(Val te)
 		Val sum = 0;
 		for (int i = 0; i < BLSIZE; i++)
 		{
-			v[i] = powf(v[i], 1.0f / te);
-			sum += v[i];
+			policy[i] = powf(policy[i], 1.0f / te);
+			sum += policy[i];
 		}
 		for (int i = 0; i < BLSIZE; i++)
-			v[i] /= sum;
-		return randomSelect(v, BLSIZE);
+			policy[i] /= sum;
+		return randomSelect(policy, BLSIZE);
 	}
 }
 
@@ -217,7 +216,7 @@ Coord Player::run(const Board &gameboard, int nowcol)
 	mcts.add_noise = cfg_add_noise;
 	mcts.UCBC = cfg_puct;
 	if (gameboard.count()>=cfg_temprature_moves)
-		return Coord(mcts.solvePolicy(cfg_temprature2));
+		return Coord(mcts.solvePolicy(cfg_temprature2, policy));
 	else
-		return Coord(mcts.solvePolicy(cfg_temprature1));
+		return Coord(mcts.solvePolicy(cfg_temprature1, policy));
 }

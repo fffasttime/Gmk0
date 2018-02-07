@@ -37,4 +37,4 @@ const int C_E = 0, C_B = 1, C_W = 2;
 //#define ASSERT(expr)
 #define ASSERT(expr) assert(expr)
 
-#define POLICY_MAX_EXPANDS 20
+#define POLICY_MAX_EXPANDS BLSIZE

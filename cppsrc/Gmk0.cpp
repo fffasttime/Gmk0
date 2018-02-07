@@ -8,14 +8,11 @@
 int main()
 {
 	Player player1("NN/I17.txt");
+	Game game;
 
-	minit();
 	initTransformTable();
-	while (1)
-	{
-		runGame(player1, player1);
-		system("pause");
-	}
+	minit();
+	game.selfplay(player1);
 	mexit();
 
 	getchar();
