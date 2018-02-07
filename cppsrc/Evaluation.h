@@ -4,8 +4,6 @@
 #include "NN/nn_cpp.h"
 #include <array>
 
-extern NN *network;
-
 struct RawInput
 {
 	//color w, color b
@@ -15,8 +13,8 @@ struct RawInput
 
 struct RawOutput
 {
-	float p[BLSIZE];
+	BoardWeight p;
 	float v;
 };
 
-void getEvaluation(Board &board, int col, RawOutput &output);
+RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform = true);

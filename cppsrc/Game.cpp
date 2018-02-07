@@ -68,7 +68,7 @@ int othercol(int col)
 	return (col & 1) + 1;
 }
 
-void runGame()
+void runGame(Player &player1, Player &player2)
 {
 	//DataSeries<EposideData> datas;
 	Board gameboard = emptygameboard;
@@ -78,15 +78,10 @@ void runGame()
 	while (gamestep < BLSIZE)
 	{
 		Coord c;
-		//if (nowcol == 1) c = getPlayerPos(gameboard); else 
-		c = run(gameboard, nowcol, history.size()>0?Coord(history[history.size() - 1]):Coord(-1,-1));
-		/*
-		if (gamestep == 3 && c.x == 14 && c.y == 14)
-		{
-			swap3(gameboard);
-			gamestep--;
-		}
-		else*/
+		if (nowcol == 1)
+			c = player1.run(gameboard, nowcol);
+		else
+			c = player2.run(gameboard, nowcol);
 		setPiece(gameboard, c, nowcol);
 		history.push_back(c.p());
 		print(gameboard);

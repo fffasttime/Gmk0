@@ -199,3 +199,7 @@ training I19, decay=0.95 le=0.05 step=16k
 w    24         26
 b    37         13
 61%PASS
+training I20, decay=0.95 le=0.05 step=16k
+w    22         28
+b    36         14
+58%

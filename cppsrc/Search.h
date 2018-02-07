@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "Board.h"
 #include "Evaluation.h"
+#include "NN/nn_cpp.h"
 #include <vector>
 using std::vector;
 
@@ -12,9 +13,13 @@ int randomSelect(BoardWeight weight, int count);
 
 class MCTS
 {
+public:
+	Val UCBC = 1.6f;
+	bool add_noise = false;
+	bool use_transform = false;
 private:
-
-	const Val UCBC = 2.8f;
+	int playouts;
+	NN* network;
 	struct Node
 	{
 		Val sumv,policy;
@@ -37,16 +42,52 @@ private:
 	void make_move(int move);
 	void unmake_move(int move);
 	Val getValue();
-	void expand(int cur,const RawOutput &output);
+	void expand(int cur,RawOutput &output);
 	void simulation_back(int cur);
+	void addNoise(int cur, Val alpha, Val epsilon);
+	void createRoot();
+
 public:
-	MCTS(const Board &_board, int _col, int lastmove);
+	MCTS(const Board &_board, int _col, NN *_network, int _playouts);
 	void solve(BoardWeight &result);
-	void solvePolicy(Val te);
+	int solvePolicy(Val te);
 	~MCTS()
 	{
 		delete[] tr;
 	}
 };
 
-Coord run(const Board &gameboard, int nowcol, Coord lastmove);
+class Player
+{
+private:
+	NN network;
+	int cfg_playouts;
+	float cfg_puct;
+	bool cfg_add_noise;
+	bool cfg_use_transform;
+	float cfg_temprature1;
+	float cfg_temprature2;
+	int cfg_temprature_moves;
+
+public:
+	Player(string file_network, 
+		int _playouts = 400,
+		float _puct=1.6, 
+		bool _add_noise = false, 
+		bool _use_transform = true,
+		float _temprature1 = 0.6,
+		float _temprature2 = 0.0, 
+		int _temprature_moves = 14):network(file_network)
+	{
+		cfg_playouts = _playouts;
+		cfg_puct = _puct;
+		cfg_add_noise = _add_noise;
+		cfg_use_transform = _use_transform;
+		cfg_temprature1=_temprature1;
+		cfg_temprature2=	_temprature2;
+		cfg_temprature_moves=	_temprature_moves;
+	}
+
+	Coord run(const Board &gameboard, int nowcol);
+
+};

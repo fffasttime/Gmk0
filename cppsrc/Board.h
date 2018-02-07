@@ -20,14 +20,27 @@ struct BoardArray
 	{
 		return m[p];
 	}
-	void debug();
+	void debug() const;
 	void clear();
-
+	int count() const;
 };
+
 
 typedef BoardArray<int> Board;
 typedef BoardArray<float> BoardWeight;
 
+extern Board transform_table[16];
+
+void initTransformTable();
+
+template<typename T>
+void boardTransform(int mode, BoardArray<T> &board)
+{
+	ASSERT(mode >= 0 && mode < 16);
+	auto copy = board;
+	for (int i = 0; i < BLSIZE; i++)
+		board[i] = copy[transform_table[mode][i]];
+}
 //*
 
 //*/

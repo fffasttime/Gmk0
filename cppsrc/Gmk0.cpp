@@ -1,23 +1,23 @@
-// MyGomoku.cpp: 定义控制台应用程序的入口点。
+// Gmk0.cpp: 定义控制台应用程序的入口点。
 //
 #include "Game.h"
 #include "ConsolePrt.h"
-#include "Evaluation.h"
+#include "Search.h"
 #include "NN/nn_cpp.h"
 
 int main()
 {
-	network = new NN(std::string("NN/I17.txt"));
+	Player player1("NN/I17.txt");
 
 	minit();
+	initTransformTable();
 	while (1)
 	{
-		runGame();
+		runGame(player1, player1);
 		system("pause");
 	}
 	mexit();
 
 	getchar();
-	delete network;
 	return 0;
 }
