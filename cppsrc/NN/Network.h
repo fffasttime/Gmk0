@@ -21,6 +21,7 @@
 #define NETWORK_H_INCLUDED
 
 #include "config.h"
+#include "OpenCLScheduler.h"
 
 #include <array>
 #include <bitset>
@@ -53,6 +54,8 @@ public:
 	static NN_Ouputs nn_forward(NNPlanes & planes);
 
 private:
+	//Opencl Network
+	static OpenCLScheduler opencl;
 
 	// Input + residual block tower
 	static std::vector<std::vector<float>> conv_weights;
