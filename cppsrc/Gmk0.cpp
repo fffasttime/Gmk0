@@ -7,7 +7,7 @@
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
-#if 1
+#if 0
 
 int runOptions(int argc, char ** argv)
 {
@@ -92,15 +92,11 @@ int main(int argc, char **argv)
 #else
 int main()
 {
+	initTransformTable();
+	string s; std::cin >> s; std::cout << "OK" << std::endl << "DEBUG ";
 	Player player1("NN/I17.txt");
 	Game game;
-
-	initTransformTable();
-	minit();
-	game.selfplay(player1);
-	mexit();
-
-	getchar();
+	game.runGomocup(player1);
 	return 0;
 }
 #endif

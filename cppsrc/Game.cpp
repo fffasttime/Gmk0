@@ -2,6 +2,7 @@
 #include "ConsolePrt.h"
 #include "Search.h"
 #include <vector>
+#include <algorithm>
 #include "GameData.h"
 using std::vector;
 
@@ -55,6 +56,14 @@ int judgeWin(Board &board)
 void Game::make_move(Coord pos)
 {
 	gameboard(pos) = nowcol;
+	history.push_back(pos.p());
+	nowcol = nowcol % 2 + 1;
+}
+
+void Game::unmake_move()
+{
+	gameboard[history.back()] = 0;
+	history.pop_back();
 	nowcol = nowcol % 2 + 1;
 }
 
@@ -63,6 +72,7 @@ void Game::reset()
 	gameboard = emptygameboard;
 	gamestep = 0;
 	nowcol = 1;
+	history.clear();
 }
 
 void Game::printWinner(int z)
@@ -79,7 +89,6 @@ void Game::printWinner(int z)
 void Game::runGame(Player &player1, Player &player2)
 {
 	reset();
-	vector<int> history;
 	if (show_mode == 1) print(gameboard);
 	while (gamestep < BLSIZE)
 	{
@@ -89,7 +98,6 @@ void Game::runGame(Player &player1, Player &player2)
 		else
 			c = player2.run(gameboard, nowcol);
 		make_move(c);
-		history.push_back(c.p());
 		if (show_mode == 1) print(gameboard);
 		else if (show_mode == 0) std::cout << c.format() << ' ';
 		if (judgeWin(gameboard))
@@ -104,14 +112,12 @@ void Game::runGame(Player &player1, Player &player2)
 void Game::runGame_selfplay(Player &player)
 {
 	reset();
-	vector<int> history;
 	vector<BoardWeight> policy;
 	if (show_mode==1) print(gameboard);
 	while (gamestep < BLSIZE)
 	{
 		Coord c = player.run(gameboard, nowcol);
 		make_move(c);
-		history.push_back(c.p());
 		policy.push_back(player.getlastPolicy());
 		if (show_mode == 1) print(gameboard);
 		else if (show_mode == 0) std::cout << c.format() <<' ';
@@ -172,4 +178,116 @@ void Game::runFromFile(string filename)
 	{
 		runRecord(data.moves);
 	}
+}
+
+
+void Game::runGomocup(Player &player)
+{
+	using std::cin;
+	using std::cout;
+	using std::endl;
+	string command;
+	Coord input, best;
+	char dot;
+	while (1) 
+	{
+		cin >> command;
+		std::transform(command.begin(), command.end(), command.begin(), ::toupper);
+
+		if (command == "START") {
+			int size; cin >> size;
+			if (size != 15 )
+				cout << "ERROR only support 15*15 board" << endl;
+			else
+			{
+				reset();
+				cout << "OK" << endl;
+			}
+		}
+		else if (command == "RESTART") {
+			reset();
+			cout << "OK" << endl;
+		}
+		else if (command == "TAKEBACK") {
+			unmake_move();
+			cout << "OK" << endl;
+		}
+		else if (command == "BEGIN") {
+			best = player.run(gameboard, nowcol);
+			make_move(best);
+			cout << best.x << "," << best.y << endl;
+		}
+		else if (command == "TURN") {
+			cin >> input.x >> dot >> input.y;
+			if (!inBorder(input) || gameboard(input))
+				cout << "ERROR invalid move" << endl;
+			else {
+				make_move(input);
+				best = player.run(gameboard, nowcol);
+				make_move(best);
+				cout << best.x << "," << best.y << endl;
+			}
+		}
+		else if (command == "BOARD") {
+			int c;
+			Coord m;
+			stringstream ss;
+			reset();
+
+			cin >> command;
+			std::transform(command.begin(), command.end(), command.begin(), ::toupper);
+			while (command != "DONE") {
+				ss.clear();
+				ss << command;
+				ss >> m.x >> dot >> m.y >> dot >> c;
+				if (!inBorder(m) || gameboard(m))
+					cout << "ERROR invalid move" << endl;
+				else
+					make_move(m);
+				cin >> command;
+				std::transform(command.begin(), command.end(), command.begin(), ::toupper);
+			}
+			best = player.run(gameboard, nowcol);
+			make_move(best);
+			cout << best.x << "," << best.y << endl;
+		}
+		else if (command == "INFO") {
+			int value;
+			string key;
+			cin >> key;
+			std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+
+			if (key == "TIMEOUT_TURN") {
+				cin >> value;
+				//TODO
+			}
+			else if (key == "TIMEOUT_MATCH") {
+				cin >> value;
+				//TODO
+			}
+			else if (key == "TIME_LEFT") {
+				cin >> value;
+				//TODO
+			}
+			else if (key == "MAX_MEMORY") {
+				cin >> value;
+				// TODO
+			}
+			else if (key == "GAME_TYPE") {
+				cin >> value;
+				// TODO
+			}
+			else if (key == "RULE") {
+				cin >> value;
+				// TODO
+			}
+			else if (key == "FOLDER") {
+				string t;
+				cin >> t;
+			}
+		}
+		else if (command == "END")
+			exit(0);
+	}
+	cout << "If you see this information, you should download a gomoku manager to run this program. Or you can modify Gmk0.config to change the mode. ";
 }

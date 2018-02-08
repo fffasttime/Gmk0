@@ -33,10 +33,10 @@ class GmkData:
             return s1
 
 def main():
-    trainer=TFProcess(None, "paras/I20/model")
-    data=GmkData("data/I19/gmkdata.txt")
+    trainer=TFProcess(None, "paras/test/model")
+    data=GmkData("data/I0/gmkdata.txt")
     while trainer.process(data.next_batch(batch_size)):
         pass
-    trainer.save_weights("I20.txt")
+    trainer.save_weights("weight.txt")
     
 main()
