@@ -65,7 +65,7 @@ int runOptions(int argc, char ** argv)
 	else
 	{
 		Player player1(network1_file, 400, 1.4f, false);
-		Player player2(network1_file, 400, 1.4f, false);
+		Player player2(network2_file, 400, 1.4f, false);
 		game.match(player1, player2);
 	}
 	return 0;
