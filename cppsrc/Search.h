@@ -73,7 +73,7 @@ private:
 public:
 	Player(string file_network, 
 		int _playouts = 400,
-		float _puct=1.6, 
+		float _puct=1.4, 
 		bool _add_noise = false, 
 		bool _use_transform = true,
 		float _temprature1 = 0.6,

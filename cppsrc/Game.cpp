@@ -3,7 +3,6 @@
 #include "Search.h"
 #include <vector>
 #include "GameData.h"
-#include <Windows.h>
 using std::vector;
 
 Board emptygameboard = {
@@ -66,11 +65,22 @@ void Game::reset()
 	nowcol = 1;
 }
 
+void Game::printWinner(int z)
+{
+	if (z == 1) 
+		std::cout << "Black win!";
+	else if (z==2) 
+		std::cout << "White win!";
+	else 
+		std::cout << "Draw!";
+	std::cout << std::endl;
+}
+
 void Game::runGame(Player &player1, Player &player2)
 {
 	reset();
-	print(gameboard);
 	vector<int> history;
+	if (show_mode == 1) print(gameboard);
 	while (gamestep < BLSIZE)
 	{
 		Coord c;
@@ -80,18 +90,15 @@ void Game::runGame(Player &player1, Player &player2)
 			c = player2.run(gameboard, nowcol);
 		make_move(c);
 		history.push_back(c.p());
-		print(gameboard);
+		if (show_mode == 1) print(gameboard);
+		else if (show_mode == 0) std::cout << c.format() << ' ';
 		if (judgeWin(gameboard))
-		{
-			if (nowcol == C_W)
-				printf("\nWhite win!");
-			else
-				printf("\nBlack win!");
 			break;
-		}
 		gamestep++;
 	}
-	printf("\nDRAW!");
+	int winner = nowcol % 2 + 1;
+	if (gamestep == BLSIZE) winner = 0;
+	printWinner(winner);
 }
 
 void Game::runGame_selfplay(Player &player)
@@ -99,22 +106,24 @@ void Game::runGame_selfplay(Player &player)
 	reset();
 	vector<int> history;
 	vector<BoardWeight> policy;
-	print(gameboard);
+	if (show_mode==1) print(gameboard);
 	while (gamestep < BLSIZE)
 	{
 		Coord c = player.run(gameboard, nowcol);
 		make_move(c);
 		history.push_back(c.p());
 		policy.push_back(player.getlastPolicy());
-		print(gameboard);
+		if (show_mode == 1) print(gameboard);
+		else if (show_mode == 0) std::cout << c.format() <<' ';
 		if (judgeWin(gameboard))
 			break;
 		gamestep++;
 	}
 	int winner = nowcol % 2 + 1;
 	if (gamestep == BLSIZE) winner = 0;
+	printWinner(winner);
 	EposideTrainingData data(history, policy , winner);
-	ofstream out("selfplaydata.txt", std::ios::app);
+	ofstream out(output_file, std::ios::app);
 	data.writeString(out);
 }
 
@@ -128,20 +137,31 @@ void Game::selfplay(Player &player)
 	}
 }
 
+void Game::match(Player &player1, Player &player2)
+{
+	int play_counts = 100;
+	for (int i = 0; i < play_counts; i++)
+	{
+		std::cout << "game " << i << '\n';
+		runGame(player1, player2);
+	}
+}
+
 void Game::runRecord(const vector<int> &moves)
 {
 	reset();
-	print(gameboard);
+	if (show_mode == 1) print(gameboard);
 	for (auto move : moves)
 	{
 		Coord c(move);
 		make_move(c);
-
-		print(gameboard);
-		Sleep(500);
-
+		if (show_mode == 1) print(gameboard);
+		else if (show_mode == 0) std::cout << c.format() << ' ';
 		gamestep++;
 	}
+	int winner = nowcol % 2 + 1;
+	if (gamestep == BLSIZE) winner = 0;
+	printWinner(winner);
 }
 
 void Game::runFromFile(string filename)

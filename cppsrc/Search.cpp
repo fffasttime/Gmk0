@@ -215,6 +215,7 @@ Coord Player::run(const Board &gameboard, int nowcol)
 	MCTS mcts(gameboard, nowcol, &network, cfg_playouts);
 	mcts.add_noise = cfg_add_noise;
 	mcts.UCBC = cfg_puct;
+	mcts.use_transform = cfg_use_transform;
 	if (gameboard.count()>=cfg_temprature_moves)
 		return Coord(mcts.solvePolicy(cfg_temprature2, policy));
 	else

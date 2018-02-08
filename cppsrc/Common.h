@@ -30,6 +30,13 @@ struct Coord
 	Coord(int _x, int _y) :x(_x), y(_y) {}
 	Coord(int n):x(n/ BSIZE),y(n%BSIZE){}
 	int p() { return x*BSIZE + y; }
+	string format() 
+	{ 
+		stringstream ss; 
+		ss << (char)('A' + x) << y + 1; 
+		string s; ss >> s; 
+		return s; 
+	}
 };
 
 const int C_E = 0, C_B = 1, C_W = 2;

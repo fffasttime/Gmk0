@@ -2,6 +2,7 @@
 
 NN::NN(std::string weight_file)
 {
+	std::cout << "finding weight file " << weight_file << std::endl;
 	cfg_weightsfile = weight_file;
 	GTP::setup_default_parameters();
 	init_global_objects();
