@@ -54,7 +54,7 @@
 #include "Utils.h"
 
 using namespace Utils;
-/*
+
 // Input + residual block tower
 static std::vector<std::vector<float>> conv_weights;
 static std::vector<std::vector<float>> conv_biases;
@@ -81,7 +81,7 @@ static std::array<float, FULL_CONNECT_SIZE> ip1_val_b;
 
 static std::array<float, FULL_CONNECT_SIZE> ip2_val_w;
 static std::array<float, 1> ip2_val_b;
-*/
+
 
 void Network::process_bn_var(std::vector<float>& weights, const float epsilon) {
     for(auto&& w : weights) {
@@ -285,11 +285,11 @@ std::pair<int, int> Network::load_network_file(std::string filename) {
     return {0, 0};
 }
 
-void Network::initialize(std::string weight_file) {
+void Network::initialize(void) {
 
     // Load network from file
     size_t channels, residual_blocks;
-    std::tie(channels, residual_blocks) = load_network_file(weight_file);
+    std::tie(channels, residual_blocks) = load_network_file(cfg_weightsfile);
     if (channels == 0) {
         exit(EXIT_FAILURE);
     }

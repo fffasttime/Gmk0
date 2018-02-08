@@ -24,7 +24,7 @@
 #include "OpenCLScheduler.h"
 
 thread_local auto current_thread_gpu_num = size_t{0};
-//OpenCLScheduler opencl;
+OpenCLScheduler opencl;
 
 void OpenCLScheduler::initialize(const int channels) {
     // multi-gpu?

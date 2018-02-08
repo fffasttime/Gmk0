@@ -35,9 +35,6 @@ public:
 	void init_global_objects();
 	void set_maxplayout(int maxplayout);
 	Network::NN_Ouputs forward(Network::NNPlanes input_planes);
-private:
-	std::string cfg_weightsfile;
-	Network network;
 };
 
 

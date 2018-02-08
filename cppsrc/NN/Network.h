@@ -21,7 +21,6 @@
 #define NETWORK_H_INCLUDED
 
 #include "config.h"
-#include "OpenCLScheduler.h"
 
 #include <array>
 #include <bitset>
@@ -46,7 +45,7 @@ public:
     static constexpr auto WINOGRAD_ALPHA = 4;
     static constexpr auto WINOGRAD_TILE = WINOGRAD_ALPHA * WINOGRAD_ALPHA;
 
-    static void initialize(std::string weight_file);
+    static void initialize();
     
     static void softmax(const std::vector<float>& input,
                         std::vector<float>& output,
@@ -54,36 +53,6 @@ public:
 	static NN_Ouputs nn_forward(NNPlanes & planes);
 
 private:
-	//Opencl Network
-	static OpenCLScheduler opencl;
-
-	// Input + residual block tower
-	static std::vector<std::vector<float>> conv_weights;
-	static std::vector<std::vector<float>> conv_biases;
-	static std::vector<std::vector<float>> batchnorm_means;
-	static std::vector<std::vector<float>> batchnorm_stddivs;
-
-	// Policy head
-	static std::vector<float> conv_pol_w;
-	static std::vector<float> conv_pol_b;
-	static std::array<float, 2> bn_pol_w1;
-	static std::array<float, 2> bn_pol_w2;
-
-	static std::array<float, BOARD_SIZE*BOARD_SIZE * 2 * ACTION_SPACE_N> ip_pol_w;
-	static std::array<float, ACTION_SPACE_N> ip_pol_b;
-
-	// Value head
-	static std::vector<float> conv_val_w;
-	static std::vector<float> conv_val_b;
-	static std::array<float, 1> bn_val_w1;
-	static std::array<float, 1> bn_val_w2;
-
-	static std::array<float, BOARD_SIZE*BOARD_SIZE * FULL_CONNECT_SIZE> ip1_val_w;
-	static std::array<float, FULL_CONNECT_SIZE> ip1_val_b;
-
-	static std::array<float, FULL_CONNECT_SIZE> ip2_val_w;
-	static std::array<float, 1> ip2_val_b;
-
     static std::pair<int, int> load_v1_network(std::ifstream& wtfile);
     static std::pair<int, int> load_network_file(std::string filename);
     static void process_bn_var(std::vector<float>& weights,
