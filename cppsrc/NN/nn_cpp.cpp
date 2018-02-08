@@ -45,7 +45,8 @@ void NN::init_global_objects()
 	NNCache::get_NNCache().set_size_from_playouts(cfg_max_playouts);
 
 	// Initialize network
-	Network::initialize();
+	network.initialize(cfg_weightsfile);
+	//Network::initialize(cfg_weightsfile);
 }
 
 void NN::set_maxplayout(int maxplayout)
@@ -55,7 +56,6 @@ void NN::set_maxplayout(int maxplayout)
 
 Network::NN_Ouputs NN::forward(Network::NNPlanes input_planes)
 {
-	return Network::nn_forward(input_planes);
+	return network.nn_forward(input_planes);
+	//return Network::nn_forward(input_planes);
 }
-
-
