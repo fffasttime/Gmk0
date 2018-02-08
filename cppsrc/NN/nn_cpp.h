@@ -37,6 +37,7 @@ public:
 	Network::NN_Ouputs forward(Network::NNPlanes input_planes);
 private:
 	std::string cfg_weightsfile;
+	Network network;
 };
 
 
