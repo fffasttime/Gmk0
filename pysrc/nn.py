@@ -91,7 +91,7 @@ class TFProcess:
         # XXX: use built-in support like tf.moving_average_variables?
         # Google's paper scales MSE by 1/4 to a [0, 1] range, so do the same to
         # get comparable values.
-        # mse_loss = mse_loss / 4.0
+        mse_loss = mse_loss * 2.0
         if self.avg_policy_loss:
             self.avg_policy_loss = 0.99 * self.avg_policy_loss + 0.01 * policy_loss
         else:
@@ -207,7 +207,7 @@ class TFProcess:
         reg_term = \
             tf.contrib.layers.apply_regularization(regularizer, reg_variables)
 
-        loss = 1.0 * self.policy_loss + 1.0 * self.mse_loss + reg_term
+        loss = 1.0 * self.policy_loss + 2.0 * self.mse_loss + reg_term
 
         opt_op = tf.train.MomentumOptimizer(
             learning_rate=0.05, momentum=0.9, use_nesterov=True)

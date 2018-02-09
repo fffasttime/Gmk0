@@ -22,6 +22,13 @@ RawInput::RawInput(Board &board)
 
 RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform)
 {
+#if 1
+	RawOutput output;
+	for (int i = 0; i < BLSIZE; i++)
+		output.p[i] = 1.0f / BLSIZE;
+	output.v = 0;
+	return output;
+#else
 	int trans;
 	if (use_transform)
 		trans = rand() % 8;
@@ -54,4 +61,5 @@ RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform)
 	boardTransform(trans + 8, output.p);
 	output.v = ret.second;
 	return output;
+#endif
 }
