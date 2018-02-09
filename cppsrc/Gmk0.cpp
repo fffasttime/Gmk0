@@ -93,8 +93,9 @@ int main(int argc, char **argv)
 int main()
 {
 	initTransformTable();
-	string s; std::cin >> s; std::cout << "OK" << std::endl << "DEBUG ";
-	Player player1("NN/I17.txt");
+	cfg_quiet = true;
+	//string s; std::cin >> s >> s; std::cout << "OK" << std::endl;
+	Player player1("E:/Data/piskvork/I17.txt", 800, 1.4, false, false, 0.0);
 	Game game;
 	game.runGomocup(player1);
 	return 0;
