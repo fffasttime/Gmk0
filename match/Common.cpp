@@ -1,7 +1,5 @@
 #include "Common.h"
 
-int cfg_seed;
-
 void logRefrsh()
 {
 	string s;

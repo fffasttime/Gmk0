@@ -26,4 +26,5 @@ public:
 	void match(Player & player1, Player & player2);
 	string output_file = "selfplaydata.txt";
 	int show_mode = 0;
+	int selfplay_count = 2048;
 };
