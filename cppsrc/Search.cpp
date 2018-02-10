@@ -8,7 +8,7 @@
 //sum of weight should be 1.0
 int randomSelect(const vector<float> &weight)
 {
-	static std::default_random_engine e;
+	static std::default_random_engine e(cfg_seed);
 	static std::uniform_real<float> u(0.0f, 1.0f);
 	float s = u(e);
 	for (int i = 0; i < weight.size(); i++)
@@ -21,7 +21,7 @@ int randomSelect(const vector<float> &weight)
 }
 int randomSelect(BoardWeight weight, int count)
 {
-	static std::default_random_engine e;
+	static std::default_random_engine e(cfg_seed);
 	static std::uniform_real<float> u(0.0f, 1.0f);
 	float s = u(e);
 	for (int i = 0; i < count; i++)

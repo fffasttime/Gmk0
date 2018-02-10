@@ -14,8 +14,6 @@ using std::string;
 #define BLSIZE (BSIZE * BSIZE)
 #define FLOAT_INF (1e10)
 
-extern int cfg_seed;
-
 //stringstream debug_s;
 
 //#define LOG_PRINT

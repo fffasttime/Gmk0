@@ -135,8 +135,7 @@ void Game::runGame_selfplay(Player &player)
 
 void Game::selfplay(Player &player)
 {
-	int play_counts = 4096;
-	for (int i = 0; i < play_counts; i++)
+	for (int i = 0; i < selfplay_count; i++)
 	{
 		std::cout << "game " << i << '\n';
 		runGame_selfplay(player);

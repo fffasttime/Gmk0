@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "ConsolePrt.h"
 #include "Search.h"
+#include "Common.h"
 #include "NN/nn_cpp.h" 
 #include <boost/program_options.hpp>
 #include <boost/filesystem/path.hpp>
@@ -12,7 +13,7 @@
 namespace po = boost::program_options;
 string exepath;
 string network_file, output_file, str_mode, str_display;
-int playout;
+int playout, seed, selfplay_count;
 
 #if 1
 
@@ -24,6 +25,8 @@ int run()
 	if (str_mode[0] == 'p') mode = 1;
 
 	Game game;
+	cfg_seed = seed;
+	srand((unsigned)cfg_seed);
 
 	if (str_display[0] == 'b')
 		game.show_mode = 1;
@@ -31,10 +34,23 @@ int run()
 		game.show_mode = 2;
 
 	game.output_file = output_file;
+	boost::filesystem::path p(network_file);
+	if (!p.is_complete()) network_file=exepath + "/" + network_file;
 
+	if (playout < 1 || playout>8192)
+	{
+		cout << "[Error] playout out of range!(1 ~ 8192)" << endl;
+		return 1;
+	}
+	if (selfplay_count < 1 || playout>16384)
+	{
+		cout << "[Error] selfplay_count out of range!(1 ~ 16384)" << endl;
+		return 1;
+	}
+	game.selfplay_count = selfplay_count;
 	if (mode == 0)
 	{
-		Player player1(network_file, 400, 1.4f, true, true, 0.8f, 0.6f);
+		Player player1(network_file, playout, 1.4f, true, true, 0.8f, 0.6f);
 		cout << "selfplay data will be saved to " << output_file << endl;
 		minit();
 		game.selfplay(player1);
@@ -43,14 +59,12 @@ int run()
 	else
 	{
 		cfg_quiet = true;
-		boost::filesystem::path p(network_file);
-		if (!p.is_complete()) network_file=exepath + "/" + network_file;
 		if (!boost::filesystem::exists(network_file))
 		{
 			cout << "ERROR could not find weight file " << network_file;
 			return 1;
 		}
-		Player player1(network_file, 400, 1.4f, false);
+		Player player1(network_file, playout, 1.4f, false);
 		game.runGomocup(player1);
 	}
 	return 0;
@@ -69,6 +83,8 @@ int getOptionCmdLine(int argc, char ** argv)
 		("output,o", po::value(&output_file)->default_value("selfplaydata.txt"), "selfplay output file")
 		("display,d", po::value(&str_display)->default_value("move"), "m[ove]: show move, b[oard]: show board, n[o]: close")
 		("playout,p", po::value(&playout)->default_value(400), "count of playouts")
+		("seed,s", po::value(&seed)->default_value(time(NULL)), "random seed")
+		("selfplaycount,c", po::value(&selfplay_count)->default_value(2048), "count of selfplay games")
 		;
 	po::variables_map vm;
 	try
@@ -101,7 +117,8 @@ int getOptionJson()
 		str_display = root.get<string>("display", "move");
 		str_mode = root.get<string>("mode", "selfplay");
 		playout = root.get<int>("playout", 400);
-
+		seed = root.get<int>("seed", time(NULL));
+		selfplay_count = root.get<int>("selfplaycount", 2048);
 	}
 	catch (std::exception &err)
 	{
@@ -116,7 +133,6 @@ int getOptionJson()
 int main(int argc, char **argv)
 {
 	initTransformTable();
-	minit(); 
 	exepath = boost::filesystem::initial_path<boost::filesystem::path>().string();
 	if (argc==1 && boost::filesystem::exists(exepath + "/Gmk0.json"))
 	{
