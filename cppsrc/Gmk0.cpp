@@ -68,7 +68,7 @@ int run()
 			cout << "ERROR could not find weight file " << network_file;
 			return 1;
 		}
-		Player player1(network_file, playout, 1.4f, false);
+		Player player1(network_file, playout, 1.4f, false, true, 0.5f);
 		game.runGomocup(player1);
 	}
 	return 0;

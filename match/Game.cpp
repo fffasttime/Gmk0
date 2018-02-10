@@ -195,4 +195,5 @@ void Game::match(Player &player1, Player &player2)
 		else if (ret == 0) w2 += 0.5;
 	}
 	std::cout << "black: " << w1 << "  white: " << w2 << endl;
+	while (getchar() != 'e');
 }
