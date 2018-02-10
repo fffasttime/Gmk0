@@ -207,3 +207,7 @@ b    36         14
 finished cpp search
 2-8
 add command line paras
+2-9
+add gmk protrol support
+2-10
+add match player

@@ -22,7 +22,7 @@ RawInput::RawInput(Board &board)
 
 RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform)
 {
-#if 1
+#if 0
 	RawOutput output;
 	for (int i = 0; i < BLSIZE; i++)
 		output.p[i] = 1.0f / BLSIZE;
