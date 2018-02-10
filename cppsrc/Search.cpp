@@ -85,7 +85,8 @@ void MCTS::createRoot()
 	auto result = getEvaluation(board, nowcol, network, use_transform);
 	tr[root].sumv = -result.v;
 	expand(root, result);
-	//addNoise(root, 0.25f, 0.03f);
+	if (add_noise)
+		addNoise(root, 0.25f, 0.2f);
 }
 
 void MCTS::solve(BoardWeight &result)
