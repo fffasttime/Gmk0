@@ -77,6 +77,7 @@ void Game::reset()
 
 void Game::printWinner(int z)
 {
+	std::cout << std::endl;
 	if (z == 1) 
 		std::cout << "Black win!";
 	else if (z==2) 

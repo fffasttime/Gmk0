@@ -210,7 +210,7 @@ class TFProcess:
         loss = 1.0 * self.policy_loss + 2.0 * self.mse_loss + reg_term
 
         opt_op = tf.train.MomentumOptimizer(
-            learning_rate=0.05, momentum=0.9, use_nesterov=True)
+            learning_rate=0.03, momentum=0.9, use_nesterov=True)
 
         self.update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(self.update_ops):
