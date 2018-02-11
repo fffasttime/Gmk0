@@ -25,6 +25,8 @@ int run()
 	else if (str_display[0] == 'n')
 		game.show_mode = 2;
 
+	game.match_count = matchcount;
+
 	boost::filesystem::path p1(str_cmd1);
 	boost::filesystem::path p2(str_cmd2);
 	if (!p1.is_complete()) str_cmd1 = exepath + "/" + str_cmd1;
@@ -50,7 +52,7 @@ int getOptionCmdLine(int argc, char ** argv)
 		("program1,p", po::value(&str_cmd1)->default_value("p1.exe"), "program 1")
 		("program2,P", po::value(&str_cmd2)->default_value("p2.exe"), "program 2")
 		("mathcount,c", po::value(&matchcount)->default_value(50), "count of match game")
-		("information,i", po::value(&cfg_show_information)->default_value(0), "0: close , 1: show detail correspondence")
+		("information,i", po::value(&cfg_show_information)->default_value(0), "0: close , 1: show correspondence detail")
 		;
 	po::variables_map vm;
 	try

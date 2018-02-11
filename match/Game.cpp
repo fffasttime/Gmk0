@@ -137,6 +137,7 @@ void Game::reset()
 
 void Game::printWinner(int z)
 {
+	std::cout << std::endl;
 	if (z == 1) 
 		std::cout << "Black win!";
 	else if (z==2) 
@@ -174,7 +175,7 @@ int Game::runGame(Player &player1, Player &player2)
 	int winner = nowcol % 2 + 1;
 	if (gamestep == BLSIZE) winner = 0;
 	printWinner(winner);
-	return 0;
+	return winner;
 }
 
 void Game::match(Player &player1, Player &player2)
@@ -195,4 +196,5 @@ void Game::match(Player &player1, Player &player2)
 		else if (ret == 0) w2 += 0.5;
 	}
 	std::cout << "black: " << w1 << "  white: " << w2 << endl;
+	while (getchar() != 'e');
 }

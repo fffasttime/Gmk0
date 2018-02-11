@@ -32,11 +32,15 @@ int run()
 		game.show_mode = 1;
 	else if (str_display[0] == 'n')
 		game.show_mode = 2;
-
-	game.output_file = output_file;
-	boost::filesystem::path p(network_file);
-	if (!p.is_complete()) network_file=exepath + "/" + network_file;
-
+	{
+		boost::filesystem::path p(output_file);
+		if (!p.is_complete()) output_file = exepath + "/" + output_file;
+		game.output_file = output_file;
+	}
+	{
+		boost::filesystem::path p(network_file);
+		if (!p.is_complete()) network_file = exepath + "/" + network_file;
+	}
 	if (playout < 1 || playout>8192)
 	{
 		cout << "[Error] playout out of range!(1 ~ 8192)" << endl;
@@ -64,7 +68,7 @@ int run()
 			cout << "ERROR could not find weight file " << network_file;
 			return 1;
 		}
-		Player player1(network_file, playout, 1.4f, false);
+		Player player1(network_file, playout, 1.4f, false, true, 0.5f);
 		game.runGomocup(player1);
 	}
 	return 0;
@@ -133,7 +137,13 @@ int getOptionJson()
 int main(int argc, char **argv)
 {
 	initTransformTable();
-	exepath = boost::filesystem::initial_path<boost::filesystem::path>().string();
+	boost::filesystem::path p(argv[0]);
+	if (p.is_complete())
+		exepath = argv[0];
+	else
+		exepath = boost::filesystem::current_path().string() + "/" + argv[0];
+	boost::filesystem::path p2(exepath);
+	exepath = p2.parent_path().string();
 	if (argc==1 && boost::filesystem::exists(exepath + "/Gmk0.json"))
 	{
 		try

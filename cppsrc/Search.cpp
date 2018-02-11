@@ -99,12 +99,12 @@ void MCTS::solve(BoardWeight &result)
 		{
 			Val maxv = -FLOAT_INF;
 			int maxp = cur;
-			if (tr[cur].sumv < -1) break;
+			if (tr[cur].sumv < -1) break; //useless??
 			for (auto &ch : tr[cur].ch)
 			{
 				Val ucb;
 				if (tr[ch].cnt == 0)
-					ucb = tr[cur].sumv / tr[cur].cnt / 1.3f + UCBC * tr[ch].policy*sqrtf((Val)tr[cur].cnt);
+					ucb = -tr[cur].sumv / tr[cur].cnt / 1.3f + UCBC * tr[ch].policy*sqrtf((Val)tr[cur].cnt);
 				else
 					ucb = tr[ch].sumv / tr[ch].cnt + UCBC*tr[ch].policy*sqrtf((Val)tr[cur].cnt) / (1 + tr[ch].cnt);
 				if (ucb > maxv)
