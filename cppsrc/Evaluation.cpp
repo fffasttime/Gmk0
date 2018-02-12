@@ -59,7 +59,7 @@ RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform)
 	for (int i = 0; i<BLSIZE; i++)
 		output.p[i] = ret.first[i];
 	boardTransform(trans + 8, output.p);
-	output.v = ret.second;
+	output.v = ret.second  * 2.0f - 1.0f;
 	return output;
 #endif
 }
