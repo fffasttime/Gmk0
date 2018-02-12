@@ -99,7 +99,7 @@ void MCTS::solve(BoardWeight &result)
 		{
 			Val maxv = -FLOAT_INF;
 			int maxp = cur;
-			if (tr[cur].sumv < -1) break; //useless??
+			//if (tr[cur].sumv < -1) break; //why did I wrote this line???
 			for (auto &ch : tr[cur].ch)
 			{
 				Val ucb;
@@ -141,6 +141,8 @@ Val MCTS::getValue()
 
 void MCTS::expand(int cur,RawOutput &output)
 {
+	if (!tr[cur].ch.empty())
+		tr[cur].ch.clear();
 	for (int i = 0; i < BLSIZE; i++)
 		if (board[i]==0) //for valid
 		{
@@ -149,8 +151,6 @@ void MCTS::expand(int cur,RawOutput &output)
 			tr[trcnt].cnt = 0;
 			tr[trcnt].policy = output.p[i];
 			tr[trcnt].move = i;
-			if (!tr[trcnt].ch.empty())
-				tr[trcnt].ch.clear();
 			tr[trcnt].fa = cur;
 			trcnt++;
 		}

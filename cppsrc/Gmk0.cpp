@@ -14,6 +14,7 @@ namespace po = boost::program_options;
 string exepath;
 string network_file, output_file, str_mode, str_display;
 int playout, seed, selfplay_count;
+float puct;
 
 #if 1
 
@@ -54,7 +55,7 @@ int run()
 	game.selfplay_count = selfplay_count;
 	if (mode == 0)
 	{
-		Player player1(network_file, playout, 1.4f, true, true, 0.8f, 0.6f);
+		Player player1(network_file, playout, puct, true, true, 0.8f, 0.6f);
 		cout << "selfplay data will be saved to " << output_file << endl;
 		minit();
 		game.selfplay(player1);
@@ -68,7 +69,7 @@ int run()
 			cout << "ERROR could not find weight file " << network_file;
 			return 1;
 		}
-		Player player1(network_file, playout, 1.4f, false, true, 0.5f);
+		Player player1(network_file, playout, puct, false, true, 0.5f);
 		game.runGomocup(player1);
 	}
 	return 0;
@@ -89,6 +90,7 @@ int getOptionCmdLine(int argc, char ** argv)
 		("playout,p", po::value(&playout)->default_value(400), "count of playouts")
 		("seed,s", po::value(&seed)->default_value(time(NULL)), "random seed")
 		("selfplaycount,c", po::value(&selfplay_count)->default_value(2048), "count of selfplay games")
+		("puct", po::value(&puct)->default_value(1.4f), "uct policy constant")
 		;
 	po::variables_map vm;
 	try
@@ -123,6 +125,7 @@ int getOptionJson()
 		playout = root.get<int>("playout", 400);
 		seed = root.get<int>("seed", time(NULL));
 		selfplay_count = root.get<int>("selfplaycount", 2048);
+		puct = root.get<float>("puct", 1.4f);
 	}
 	catch (std::exception &err)
 	{
