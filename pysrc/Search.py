@@ -12,8 +12,8 @@ from Gomoku import *
 
 print("[Info] Loading nn module")
 from nn import TFProcess
-network=TFProcess("./paras/I0/")
-network_opp=TFProcess("./paras/test/")
+network=TFProcess("./I4/")
+network_opp=TFProcess("./I4/")
 print("[Info] nn module loaded")
 
 BIGVALUE=10000
@@ -24,7 +24,7 @@ def add_dirlect_noise(policy, epsilon, alpha):
     return policy
 
 class MCTS:
-    puct=0.8
+    puct=1.4
     run_cnt=120
     max_thread=6
     
@@ -196,7 +196,7 @@ class MCTS:
             #use numpy to make judge faster
             fvis=sqrt(cur[0])
             ucbs=np.zeros([BLSIZE])
-            ucbs.fill(-cur[1]/cur[0]/1.3)
+            ucbs.fill((-cur[1]/cur[0]+1)/1.1 - 1)
             vcnts=np.zeros([BLSIZE])
             for ch in cur[2]:
                 move=self.node[ch][5]
@@ -231,9 +231,10 @@ class MCTS:
         probs,value=self.run_net_1()
         value=-value
         if 1:
-            probs=add_dirlect_noise(probs, 0.25, 0.03)
+            probs=add_dirlect_noise(probs, 0.25, 0.2)
         node=[1, value, [], -1, probs, -1, np.zeros(BLSIZE, int), False]
         self.node.append(node)
+        #print(value)
 
     def expand_back_end(self, fa, move):
         node=[1, 1, [], fa, np.zeros(BLSIZE), move, np.zeros(BLSIZE, int), True]
