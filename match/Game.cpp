@@ -87,15 +87,14 @@ void Player::reset()
 
 Coord Player::turn_move(Coord move)
 {
-	pipe_put << "TURN " << move.x + 1 << "," << move.y + 1 << endl;
-	if (cfg_show_information) std::cout << "match:  TURN " << move.x + 1 << "," << move.y + 1 << " ->" << name << endl;
+	pipe_put << "TURN " << move.x << "," << move.y << endl;
+	if (cfg_show_information) std::cout << "match:  TURN " << move.x << "," << move.y << " ->" << name << endl;
 	//stringstream ss; string line;
 	//std::getline(pipe_get, line);
 	//if (cfg_show_information) std::cout << name << ": " << line << endl;
 	//ss << line;
 	char dot; Coord input;
 	pipe_get >> input.x >> dot >> input.y;
-	input.x--; input.y--;
 	return input;
 }
 
@@ -109,7 +108,6 @@ Coord Player::begin()
 	//ss << line;
 	char dot; Coord input;
 	pipe_get >> input.x >> dot >> input.y;
-	input.x--; input.y--;
 	return input;
 }
 
