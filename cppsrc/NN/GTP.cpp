@@ -51,6 +51,7 @@ bool cfg_tune_only;
 float cfg_softmax_temp;
 std::string cfg_weightsfile;
 std::string cfg_options_str;
+std::string cfg_curr_dir;
 bool cfg_quiet;
 
 void GTP::setup_default_parameters() {

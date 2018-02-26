@@ -70,3 +70,8 @@ void initTransformTable()
 		for (int j = 0; j < BLSIZE; j++)
 			transform_table[i + 8][transform_table[i][j]] = j;
 }
+
+int posTransform(int mode, int p)
+{
+	return transform_table[mode][p];
+}

@@ -39,6 +39,7 @@ extern bool cfg_tune_only;
 extern float cfg_softmax_temp;
 extern std::string cfg_weightsfile;
 extern std::string cfg_options_str;
+extern std::string cfg_curr_dir;
 extern bool cfg_quiet;
 
 class GTP {

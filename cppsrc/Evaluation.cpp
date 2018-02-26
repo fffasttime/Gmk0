@@ -20,7 +20,7 @@ RawInput::RawInput(Board &board)
 		}
 }
 
-RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform)
+RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform, int lastmove)
 {
 #if 0
 	RawOutput output;
@@ -38,6 +38,7 @@ RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform)
 	Network::NNPlanes input;
 	input.resize(2);
 	for (int i = 0; i < BLSIZE; i++)
+	{ 
 		if (board[i] == 0)
 		{
 			input[0][i] = 0;
@@ -53,7 +54,7 @@ RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform)
 			input[0][i] = 0;
 			input[1][i] = 1;
 		}
-
+	}
 	auto ret = network->forward(input);
 	RawOutput output;
 	for (int i = 0; i<BLSIZE; i++)

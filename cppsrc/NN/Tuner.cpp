@@ -411,7 +411,7 @@ void Tuner::store_sgemm_tuners(const int m, const int n, const int k,
     auto file_contents = std::vector<std::string>();
     {
         // Read the previous contents to string
-        auto file = std::ifstream{TUNER_FILE_LOCAL};
+        auto file = std::ifstream{ cfg_curr_dir + TUNER_FILE_LOCAL};
         if (file.good()) {
             auto line = std::string{};
             while (std::getline(file, line)) {
@@ -419,7 +419,7 @@ void Tuner::store_sgemm_tuners(const int m, const int n, const int k,
             }
         }
     }
-    auto file = std::ofstream{TUNER_FILE_LOCAL};
+    auto file = std::ofstream{ cfg_curr_dir + TUNER_FILE_LOCAL};
 
     auto device_name = m_opencl.get_device_name();
     auto tuning_params = std::stringstream{};
@@ -490,7 +490,7 @@ std::string Tuner::sgemm_tuners_from_line(std::string line,
 
 std::string Tuner::load_sgemm_tuners(const int m, const int n, const int k,
                                      const int batch_size) {
-    auto file = std::ifstream{TUNER_FILE_LOCAL};
+    auto file = std::ifstream{ cfg_curr_dir + TUNER_FILE_LOCAL};
     if (!cfg_sgemm_exhaustive && file.good()) {
         auto line = std::string{};
         while (std::getline(file, line)) {

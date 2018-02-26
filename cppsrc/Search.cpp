@@ -161,7 +161,7 @@ void MCTS::simulation_back(int cur)
 	Val val;
 	if (tr[cur].cnt == 0 && judgeWin(board) == 0) //isn't end node
 	{
-		auto result = getEvaluation(board, nowcol, network, use_transform);
+		auto result = getEvaluation(board, nowcol, network, use_transform, tr[cur].move);
 		val = -result.v;
 		expand(cur, result);
 	}
@@ -217,7 +217,13 @@ Coord Player::run(const Board &gameboard, int nowcol)
 	mcts.add_noise = cfg_add_noise;
 	mcts.UCBC = cfg_puct;
 	mcts.use_transform = cfg_use_transform;
-	if (gameboard.count() == 0) return {6+rand()%5, 6+rand()%5};
+	if (0)
+	{
+		for (int i = 0; i < 225; i++) policy[i] = 0;
+		Coord c = { 6 + rand() % 5, 6 + rand() % 5 };
+		policy(c) = 1;
+		return c;
+	}
 	if (gameboard.count()>=cfg_temprature_moves)
 		return Coord(mcts.solvePolicy(cfg_temprature2, policy));
 	else

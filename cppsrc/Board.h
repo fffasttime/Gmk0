@@ -41,6 +41,8 @@ void boardTransform(int mode, BoardArray<T> &board)
 	for (int i = 0; i < BLSIZE; i++)
 		board[i] = copy[transform_table[mode][i]];
 }
+
+int posTransform(int mode, int p);
 //*
 
 //*/

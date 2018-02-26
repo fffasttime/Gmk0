@@ -17,4 +17,4 @@ struct RawOutput
 	float v;
 };
 
-RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform = true);
+RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform = true, int lastmove=-1);

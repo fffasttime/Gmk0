@@ -147,6 +147,7 @@ int main(int argc, char **argv)
 		exepath = boost::filesystem::current_path().string() + "/" + argv[0];
 	boost::filesystem::path p2(exepath);
 	exepath = p2.parent_path().string();
+	cfg_curr_dir = exepath + "/";
 	if (argc==1 && boost::filesystem::exists(exepath + "/Gmk0.json"))
 	{
 		try
