@@ -215,18 +215,17 @@ void Game::runGomocup(Player &player)
 		else if (command == "BEGIN") {
 			best = player.run(gameboard, nowcol);
 			make_move(best);
-			cout << best.x + 1 << "," << best.y + 1 << endl;
+			cout << best.x << "," << best.y << endl;
 		}
 		else if (command == "TURN") {
 			cin >> input.x >> dot >> input.y;
-			input.x--; input.y--;
 			if (!inBorder(input) || gameboard(input))
 				cout << "ERROR invalid move" << endl;
 			else {
 				make_move(input);
 				best = player.run(gameboard, nowcol);
 				make_move(best);
-				cout << best.x + 1 << "," << best.y + 1 << endl;
+				cout << best.x << "," << best.y << endl;
 			}
 		}
 		else if (command == "BOARD") {
@@ -241,7 +240,6 @@ void Game::runGomocup(Player &player)
 				ss.clear();
 				ss << command;
 				ss >> m.x >> dot >> m.y >> dot >> c;
-				m.x--; m.y--;
 				if (!inBorder(m) || gameboard(m))
 					cout << "ERROR invalid move" << endl;
 				else
@@ -251,7 +249,7 @@ void Game::runGomocup(Player &player)
 			}
 			best = player.run(gameboard, nowcol);
 			make_move(best);
-			cout << best.x + 1 << "," << best.y + 1<< endl;
+			cout << best.x<< "," << best.y<< endl;
 		}
 		else if (command == "INFO") {
 			int value;
