@@ -89,6 +89,8 @@ public:
 		cfg_temprature_moves=	_temprature_moves;
 	}
 
+	Coord randomOpening(Board gameboard);
+
 	Coord run(const Board &gameboard, int nowcol);
 
 	const BoardWeight& getlastPolicy()

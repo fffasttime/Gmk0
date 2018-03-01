@@ -16,13 +16,9 @@ using std::string;
 
 extern int cfg_seed;
 
-//stringstream debug_s;
+extern stringstream debug_s;
 
-//#define LOG_PRINT
-//stringstream fout;
-#ifdef LOG_PRINT
-ofstream filelog("renju.log");
-#endif
+void logOpen(string filename);
 void logRefrsh();
 
 struct Coord
