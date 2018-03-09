@@ -78,13 +78,18 @@ struct EposideTrainingData
 	typedef BoardWeight StepPolicy;
 	int stepcount;
 	std::vector<int> moves;
+	std::vector<float> winrate;
 	std::vector<StepPolicy> policy;
 	int z;
 
 	EposideTrainingData() = default;
-	EposideTrainingData(const std::vector<int> &_moves, const std::vector<StepPolicy> &_policy, int _z):z(_z)
+	EposideTrainingData(const std::vector<int> &_moves, 
+		const std::vector<StepPolicy> &_policy, 
+		const std::vector<float> &_winrate, 
+		int _z):z(_z)
 	{
 		policy.assign(_policy.begin(), _policy.end());
+		winrate.assign(_winrate.begin(), _winrate.end());
 		moves.assign(_moves.begin(), _moves.end());
 		stepcount = (int)moves.size();
 	}
@@ -107,6 +112,7 @@ struct EposideTrainingData
 		for (int i=0;i<stepcount;i++)
 		{
 			ss << ' '<< moves[i];
+			ss << ' '<< winrate[i];
 			for (int j = 0; j < POLICY_MAX_EXPANDS; j++)
 				if (policy[i][j] == 0.0f)
 					ss << " 0";
@@ -123,6 +129,7 @@ struct EposideTrainingData
 		for (int i = 0; i < stepcount; i++)
 		{
 			out << (ubyte)moves[i]; 
+			out << winrate[i];
 			for (int j = 0; j < POLICY_MAX_EXPANDS; j++)
 				out << policy[i][j];
 		}

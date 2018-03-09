@@ -20,6 +20,7 @@ float puct;
 
 int run()
 {
+	initZobristTable();
 	using std::cout;
 	using std::endl;
 	int mode = 0; //0 : selfplay, 1 : protrol
@@ -55,7 +56,7 @@ int run()
 	game.selfplay_count = selfplay_count;
 	if (mode == 0)
 	{
-		Player player1(network_file, playout, puct, true, true, 0.8f, 0.6f);
+		Player player1(network_file, playout, puct, true, true, 0.8f, 0.6f, 12);
 		cout << "selfplay data will be saved to " << output_file << endl;
 		minit();
 		game.selfplay(player1);
@@ -64,6 +65,7 @@ int run()
 	else
 	{
 		cfg_quiet = true;
+		//logOpen(exepath + "/Gmk0.log");
 		if (!boost::filesystem::exists(network_file))
 		{
 			cout << "ERROR could not find weight file " << network_file;

@@ -114,12 +114,14 @@ void Game::runGame_selfplay(Player &player)
 {
 	reset();
 	vector<BoardWeight> policy;
+	vector<float> winrate;
 	if (show_mode==1) print(gameboard);
 	while (gamestep < BLSIZE)
 	{
 		Coord c = player.run(gameboard, nowcol);
 		make_move(c);
 		policy.push_back(player.getlastPolicy());
+		winrate.push_back(player.getlastValue());
 		if (show_mode == 1) print(gameboard);
 		else if (show_mode == 0) std::cout << c.format() <<' ';
 		if (judgeWin(gameboard))
@@ -129,7 +131,7 @@ void Game::runGame_selfplay(Player &player)
 	int winner = nowcol % 2 + 1;
 	if (gamestep == BLSIZE) winner = 0;
 	printWinner(winner);
-	EposideTrainingData data(history, policy , winner);
+	EposideTrainingData data(history, policy, winrate , winner);
 	ofstream out(output_file, std::ios::app);
 	data.writeString(out);
 }

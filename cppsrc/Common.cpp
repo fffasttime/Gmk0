@@ -2,15 +2,24 @@
 
 int cfg_seed;
 
+stringstream debug_s;
+ofstream filelog;
+
+void logOpen(string filename)
+{
+	filelog.open(filename);
+}
+
 void logRefrsh()
 {
 	string s;
-	#ifdef LOG_PRINT
-	while (!fout.eof())
+	if (filelog.is_open())
 	{
-		getline(fout, s);
-		filelog << s << '\n';
+		while (!debug_s.eof())
+		{
+			getline(debug_s, s);
+			filelog << s << std::endl;
+		} 
 	}
-	fout.clear();
-	#endif
+	debug_s.clear();
 }

@@ -52,19 +52,20 @@ void MCTS::addNoise(int cur, Val epsilon, Val alpha)
 	}
 }
 
-MCTS::MCTS(const Board &_board, int _col, NN *_network, int _playouts)
+MCTS::MCTS(Board &_board, int _col, NN *_network, int _playouts):boardhash(_board)
 {
 	board = _board;
 	nowcol = _col;
 	network = _network;
 	playouts = _playouts;
-	tr = new Node[playouts*BLSIZE];
+	tr = new Node[(playouts+2)*BLSIZE];
 }
 
 void MCTS::make_move(int move)
 {
 	ASSERT(move >= 0 && move < BSIZE*BSIZE);
 	ASSERT(board(move) == 0);
+	boardhash.update(move, board[move], nowcol);
 	board[move] = nowcol;
 	nowcol = nowcol % 2 + 1;
 }
@@ -74,6 +75,7 @@ void MCTS::unmake_move(int move)
 	ASSERT(move >= 0 && move < BSIZE*BSIZE);
 	nowcol = nowcol % 2 + 1;
 	ASSERT(board(move) == nowcol);
+	boardhash.update(move, nowcol, 0);
 	board[move] = 0;
 }
 
@@ -85,8 +87,36 @@ void MCTS::createRoot()
 	auto result = getEvaluation(board, nowcol, network, use_transform);
 	tr[root].sumv = -result.v;
 	expand(root, result);
+	debug_s << "net win: " << result.v << '\n';
 	if (add_noise)
 		addNoise(root, 0.25f, 0.2f);
+}
+
+//LZ's selection, weaker than current
+int MCTS::selection(int cur)
+{
+	if (tr[cur].ch.size() == 0)
+		return cur;
+	auto sum_policy = 0.0f;
+	for (auto &ch : tr[cur].ch)
+		if (tr[ch].cnt)
+			sum_policy += tr[ch].policy;
+	
+	auto numerator = sqrtf((Val)tr[cur].ch.size());
+	auto fpu = 0.3f * sqrtf(sum_policy);
+	int maxc = 0; Val maxv = -FLOAT_INF;
+
+	for (auto &ch : tr[cur].ch)
+	{
+		auto winrate = tr[ch].cnt == 0 ? (-tr[cur].sumv / tr[cur].cnt) - fpu : tr[ch].sumv / tr[ch].cnt;
+		auto ucb = winrate + UCBC * tr[ch].policy * numerator / (1.0f + tr[ch].cnt);
+		if (ucb > maxv)
+		{
+			maxv = ucb;
+			maxc = ch;
+		}
+	}
+	return maxc;
 }
 
 void MCTS::solve(BoardWeight &result)
@@ -98,8 +128,9 @@ void MCTS::solve(BoardWeight &result)
 		while (1)
 		{
 			Val maxv = -FLOAT_INF;
+			//int maxp = selection(cur);
+			
 			int maxp = cur;
-			//if (tr[cur].sumv < -1) break; //why did I wrote this line???
 			for (auto &ch : tr[cur].ch)
 			{
 				Val ucb;
@@ -113,6 +144,7 @@ void MCTS::solve(BoardWeight &result)
 					maxp = ch;
 				}
 			}
+			
 			//leaf node
 			if (maxp == cur) break;
 			//forward search
@@ -122,7 +154,8 @@ void MCTS::solve(BoardWeight &result)
 		//simulation & backpropagation
 		simulation_back(cur);
 	}
-
+	debug_s << "mc win: " << -tr[root].sumv / tr[root].cnt<<'\n';
+	logRefrsh();
 	result.clear();
 	for (auto ch : tr[root].ch)
 	{
@@ -159,14 +192,18 @@ void MCTS::expand(int cur,RawOutput &output)
 void MCTS::simulation_back(int cur)
 {
 	Val val;
-	if (tr[cur].cnt == 0 && judgeWin(board) == 0) //isn't end node
+	if (tr[cur].cnt == 0 && judgeWin(board) == 0 && board.count() < BLSIZE) //isn't end node
 	{
 		auto result = getEvaluation(board, nowcol, network, use_transform, tr[cur].move);
 		val = -result.v;
 		expand(cur, result);
 	}
 	else
-		val = 1;
+	{
+		val = 1; 
+		if (board.count() == BLSIZE)
+			val = 0;
+	}
 	tr[cur].sumv += val;
 	tr[cur].cnt++;
 	//back
@@ -180,21 +217,35 @@ void MCTS::simulation_back(int cur)
 	}
 }
 
-int MCTS::solvePolicy(Val te, BoardWeight &policy)
+int MCTS::solvePolicy(Val te, BoardWeight &policy, float &winrate)
 {
 	solve(policy);
+	winrate = -tr[0].sumv / tr[0].cnt;
+	auto tpolicy = policy;
+
+	{
+		Val sum = 0;
+		for (int i = 0; i < BLSIZE; i++)
+		{
+			policy[i] = powf(policy[i], 1.0f / 0.7f);
+			sum += policy[i];
+		}
+		for (int i = 0; i < BLSIZE; i++)
+			policy[i] /= sum;
+	}
+
 	//Tempearture
-	if (te < 0.2) //t-->0
+	if (te < 0.2) //tau-->0
 	{
 		int maxc; Val maxv=-FLOAT_INF;
 		for (int i = 0; i < BLSIZE; i++)
-			if (maxv < policy[i])
+			if (maxv < tpolicy[i])
 			{
 				maxc = i;
-				maxv = policy[i];
+				maxv = tpolicy[i];
 			}
-		for (int i = 0; i < BLSIZE; i++) policy[i] = 0;
-		policy[maxc] = 1;
+		for (int i = 0; i < BLSIZE; i++) tpolicy[i] = 0;
+		tpolicy[maxc] = 1;
 		return maxc;
 	}
 	else
@@ -202,30 +253,68 @@ int MCTS::solvePolicy(Val te, BoardWeight &policy)
 		Val sum = 0;
 		for (int i = 0; i < BLSIZE; i++)
 		{
-			policy[i] = powf(policy[i], 1.0f / te);
-			sum += policy[i];
+			tpolicy[i] = powf(tpolicy[i], 1.0f / te);
+			sum += tpolicy[i];
 		}
 		for (int i = 0; i < BLSIZE; i++)
-			policy[i] /= sum;
-		return randomSelect(policy, BLSIZE);
+			tpolicy[i] /= sum;
+		return randomSelect(tpolicy, BLSIZE);
 	}
 }
 
-Coord Player::run(const Board &gameboard, int nowcol)
+Coord Player::randomOpening(Board gameboard)
+{
+	if (gameboard.count() == 0)
+	{
+		return { 4+rand()%7, 4 + rand() % 7 };
+	}
+	else if (gameboard.count() == 1)
+	{
+		int first;
+		for (int i = 0; i < BLSIZE; i++)
+			if (gameboard[i] == 1)
+				first = i;
+		int dir = rand() % 8;
+		return { cx[dir] + first / BSIZE, cy[dir] + first % BSIZE };
+	}
+	else
+	{
+		int first;
+		for (int i = 0; i < BLSIZE; i++)
+			if (gameboard[i] == 1)
+				first = i;
+		int x = first / BSIZE, y = first%BSIZE;
+		BoardWeight po;
+		po.clear();
+		float sum = 0;
+		for (int i = x-3; i <= x+3; i++)
+			for (int j = y-3; j <= y+3; j++)
+			{
+				if (gameboard(i, j) == 0)
+					if (i >= x-1 && i <= x+1 && j >= y-1 && j <= y+1)
+						po(i, j) = 1, sum+=1;
+					else
+						po(i, j) = 1, sum+=1;
+			}
+		for (int i = 0; i < BLSIZE; i++)
+			po[i] /= sum;
+		return randomSelect(po, BLSIZE);
+	}
+}
+
+Coord Player::run(Board &gameboard, int nowcol)
 {
 	MCTS mcts(gameboard, nowcol, &network, cfg_playouts);
 	mcts.add_noise = cfg_add_noise;
 	mcts.UCBC = cfg_puct;
 	mcts.use_transform = cfg_use_transform;
-	if (0)
+	if (gameboard.count() < 3)
 	{
-		for (int i = 0; i < 225; i++) policy[i] = 0;
-		Coord c = { 6 + rand() % 5, 6 + rand() % 5 };
-		policy(c) = 1;
-		return c;
+		mcts.solvePolicy(cfg_temprature1, policy, winrate); //keep policy
+		return randomOpening(gameboard);
 	}
 	if (gameboard.count()>=cfg_temprature_moves)
-		return Coord(mcts.solvePolicy(cfg_temprature2, policy));
+		return Coord(mcts.solvePolicy(cfg_temprature2, policy, winrate));
 	else
-		return Coord(mcts.solvePolicy(cfg_temprature1, policy));
+		return Coord(mcts.solvePolicy(cfg_temprature1, policy, winrate));
 }

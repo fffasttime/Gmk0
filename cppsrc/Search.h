@@ -5,6 +5,7 @@
 #include "Evaluation.h"
 #include "NN/nn_cpp.h"
 #include <vector>
+#include <map>
 using std::vector;
 
 typedef float Val;
@@ -34,10 +35,13 @@ private:
 		}
 	};
 	Node *tr;
+	std::map<unsigned long long, int> hash_table;
+	BoardHasher boardhash;
 	const int root = 0;
 	int trcnt = 1, viscnt = 0;
 	Board board;
 	int nowcol;
+
 private:
 	void make_move(int move);
 	void unmake_move(int move);
@@ -46,11 +50,12 @@ private:
 	void simulation_back(int cur);
 	void addNoise(int cur, Val alpha, Val epsilon);
 	void createRoot();
+	int selection(int cur);
 
 public:
-	MCTS(const Board &_board, int _col, NN *_network, int _playouts);
+	MCTS(Board &_board, int _col, NN *_network, int _playouts);
 	void solve(BoardWeight &result);
-	int solvePolicy(Val te, BoardWeight &policy);
+	int solvePolicy(Val te, BoardWeight &policy, float &winrate);
 	~MCTS()
 	{
 		delete[] tr;
@@ -70,10 +75,11 @@ private:
 	int cfg_temprature_moves;
 
 	BoardWeight policy;
+	float winrate;
 public:
 	Player(string file_network, 
 		int _playouts = 400,
-		float _puct=1.4, 
+		float _puct=1.6, 
 		bool _add_noise = false, 
 		bool _use_transform = true,
 		float _temprature1 = 0.6,
@@ -89,10 +95,16 @@ public:
 		cfg_temprature_moves=	_temprature_moves;
 	}
 
-	Coord run(const Board &gameboard, int nowcol);
+	Coord randomOpening(Board gameboard);
+
+	Coord run(Board &gameboard, int nowcol);
 
 	const BoardWeight& getlastPolicy()
 	{
 		return policy;
+	}
+	float getlastValue()
+	{
+		return winrate;
 	}
 };
