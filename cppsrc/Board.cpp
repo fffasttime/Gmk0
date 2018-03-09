@@ -1,4 +1,5 @@
 #include "Board.h"
+#include <random>
 
 bool inBorder(Coord a)
 {
@@ -74,4 +75,30 @@ void initTransformTable()
 int posTransform(int mode, int p)
 {
 	return transform_table[mode][p];
+}
+
+BoardArray<unsigned long long> zobirst_table[3];
+
+void initZobristTable()
+{
+	std::mt19937 e(cfg_seed);
+	std::uniform_int<unsigned long long> u(0, 1ull<<63);
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < BLSIZE; j++)
+		{
+			zobirst_table[i][j] = u(e);
+		}
+}
+
+BoardHasher::BoardHasher(Board &board)
+{
+	num = 0;
+	for (int i = 0; i < BLSIZE; i++)
+		num ^= zobirst_table[board[i]][i];
+}
+
+void BoardHasher::update(int pos, int old, int target)
+{
+	num ^= zobirst_table[old][pos];
+	num ^= zobirst_table[target][pos];
 }

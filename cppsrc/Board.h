@@ -43,9 +43,17 @@ void boardTransform(int mode, BoardArray<T> &board)
 }
 
 int posTransform(int mode, int p);
-//*
 
-//*/
+void initZobristTable();
+
+struct BoardHasher
+{
+	unsigned long long num;
+	BoardHasher(Board &board);
+
+	void update(int pos, int old, int target);
+	unsigned long long operator()() { return num; }
+};
 
 const int cx[8] = { -1,-1,-1,0,0,1,1,1 };
 const int cy[8] = { -1,0,1,-1,1,-1,0,1 };

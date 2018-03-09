@@ -52,7 +52,7 @@ void MCTS::addNoise(int cur, Val epsilon, Val alpha)
 	}
 }
 
-MCTS::MCTS(const Board &_board, int _col, NN *_network, int _playouts)
+MCTS::MCTS(Board &_board, int _col, NN *_network, int _playouts):boardhash(_board)
 {
 	board = _board;
 	nowcol = _col;
@@ -65,6 +65,7 @@ void MCTS::make_move(int move)
 {
 	ASSERT(move >= 0 && move < BSIZE*BSIZE);
 	ASSERT(board(move) == 0);
+	boardhash.update(move, board[move], nowcol);
 	board[move] = nowcol;
 	nowcol = nowcol % 2 + 1;
 }
@@ -74,6 +75,7 @@ void MCTS::unmake_move(int move)
 	ASSERT(move >= 0 && move < BSIZE*BSIZE);
 	nowcol = nowcol % 2 + 1;
 	ASSERT(board(move) == nowcol);
+	boardhash.update(move, nowcol, 0);
 	board[move] = 0;
 }
 
@@ -90,6 +92,33 @@ void MCTS::createRoot()
 		addNoise(root, 0.25f, 0.2f);
 }
 
+//LZ's selection, weaker than current
+int MCTS::selection(int cur)
+{
+	if (tr[cur].ch.size() == 0)
+		return cur;
+	auto sum_policy = 0.0f;
+	for (auto &ch : tr[cur].ch)
+		if (tr[ch].cnt)
+			sum_policy += tr[ch].policy;
+	
+	auto numerator = sqrtf((Val)tr[cur].ch.size());
+	auto fpu = 0.3f * sqrtf(sum_policy);
+	int maxc = 0; Val maxv = -FLOAT_INF;
+
+	for (auto &ch : tr[cur].ch)
+	{
+		auto winrate = tr[ch].cnt == 0 ? (-tr[cur].sumv / tr[cur].cnt) - fpu : tr[ch].sumv / tr[ch].cnt;
+		auto ucb = winrate + UCBC * tr[ch].policy * numerator / (1.0f + tr[ch].cnt);
+		if (ucb > maxv)
+		{
+			maxv = ucb;
+			maxc = ch;
+		}
+	}
+	return maxc;
+}
+
 void MCTS::solve(BoardWeight &result)
 {
 	createRoot();
@@ -99,8 +128,9 @@ void MCTS::solve(BoardWeight &result)
 		while (1)
 		{
 			Val maxv = -FLOAT_INF;
+			//int maxp = selection(cur);
+			
 			int maxp = cur;
-			//if (tr[cur].sumv < -1) break; //why did I wrote this line???
 			for (auto &ch : tr[cur].ch)
 			{
 				Val ucb;
@@ -114,6 +144,7 @@ void MCTS::solve(BoardWeight &result)
 					maxp = ch;
 				}
 			}
+			
 			//leaf node
 			if (maxp == cur) break;
 			//forward search
@@ -161,14 +192,18 @@ void MCTS::expand(int cur,RawOutput &output)
 void MCTS::simulation_back(int cur)
 {
 	Val val;
-	if (tr[cur].cnt == 0 && judgeWin(board) == 0) //isn't end node
+	if (tr[cur].cnt == 0 && judgeWin(board) == 0 && board.count() < BLSIZE) //isn't end node
 	{
 		auto result = getEvaluation(board, nowcol, network, use_transform, tr[cur].move);
 		val = -result.v;
 		expand(cur, result);
 	}
 	else
-		val = 1;
+	{
+		val = 1; 
+		if (board.count() == BLSIZE)
+			val = 0;
+	}
 	tr[cur].sumv += val;
 	tr[cur].cnt++;
 	//back
@@ -182,16 +217,17 @@ void MCTS::simulation_back(int cur)
 	}
 }
 
-int MCTS::solvePolicy(Val te, BoardWeight &policy)
+int MCTS::solvePolicy(Val te, BoardWeight &policy, float &winrate)
 {
 	solve(policy);
+	winrate = -tr[0].sumv / tr[0].cnt;
 	auto tpolicy = policy;
 
 	{
 		Val sum = 0;
 		for (int i = 0; i < BLSIZE; i++)
 		{
-			policy[i] = powf(policy[i], 1.0f / 0.8f);
+			policy[i] = powf(policy[i], 1.0f / 0.7f);
 			sum += policy[i];
 		}
 		for (int i = 0; i < BLSIZE; i++)
@@ -230,7 +266,7 @@ Coord Player::randomOpening(Board gameboard)
 {
 	if (gameboard.count() == 0)
 	{
-		return { 5+rand()%5, 5 + rand() % 5 };
+		return { 4+rand()%7, 4 + rand() % 7 };
 	}
 	else if (gameboard.count() == 1)
 	{
@@ -251,12 +287,12 @@ Coord Player::randomOpening(Board gameboard)
 		BoardWeight po;
 		po.clear();
 		float sum = 0;
-		for (int i = x-2; i <= x+2; i++)
-			for (int j = y-2; j <= y+2; j++)
+		for (int i = x-3; i <= x+3; i++)
+			for (int j = y-3; j <= y+3; j++)
 			{
 				if (gameboard(i, j) == 0)
 					if (i >= x-1 && i <= x+1 && j >= y-1 && j <= y+1)
-						po(i, j) = 1.5, sum+=1.5;
+						po(i, j) = 1, sum+=1;
 					else
 						po(i, j) = 1, sum+=1;
 			}
@@ -266,7 +302,7 @@ Coord Player::randomOpening(Board gameboard)
 	}
 }
 
-Coord Player::run(const Board &gameboard, int nowcol)
+Coord Player::run(Board &gameboard, int nowcol)
 {
 	MCTS mcts(gameboard, nowcol, &network, cfg_playouts);
 	mcts.add_noise = cfg_add_noise;
@@ -274,11 +310,11 @@ Coord Player::run(const Board &gameboard, int nowcol)
 	mcts.use_transform = cfg_use_transform;
 	if (gameboard.count() < 3)
 	{
-		mcts.solvePolicy(cfg_temprature1, policy); //keep policy
+		mcts.solvePolicy(cfg_temprature1, policy, winrate); //keep policy
 		return randomOpening(gameboard);
 	}
 	if (gameboard.count()>=cfg_temprature_moves)
-		return Coord(mcts.solvePolicy(cfg_temprature2, policy));
+		return Coord(mcts.solvePolicy(cfg_temprature2, policy, winrate));
 	else
-		return Coord(mcts.solvePolicy(cfg_temprature1, policy));
+		return Coord(mcts.solvePolicy(cfg_temprature1, policy, winrate));
 }
