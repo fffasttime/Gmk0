@@ -154,7 +154,7 @@ void MCTS::solve(BoardWeight &result)
 		//simulation & backpropagation
 		simulation_back(cur);
 	}
-	debug_s << "mc win: " << -tr[root].sumv / tr[root].cnt<<'\n';
+	debug_s << "mc win: " << -tr[root].sumv / tr[root].cnt<<'\n' << counter << '\n';
 	logRefrsh();
 	result.clear();
 	for (auto ch : tr[root].ch)
@@ -197,6 +197,11 @@ void MCTS::simulation_back(int cur)
 		auto result = getEvaluation(board, nowcol, network, use_transform, tr[cur].move);
 		val = -result.v;
 		expand(cur, result);
+		auto &it = hash_table.find(boardhash());
+		if (it != hash_table.end())
+			counter++;
+		else
+			hash_table[boardhash()] = cur;
 	}
 	else
 	{

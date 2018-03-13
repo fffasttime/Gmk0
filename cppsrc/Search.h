@@ -41,6 +41,7 @@ private:
 	int trcnt = 1, viscnt = 0;
 	Board board;
 	int nowcol;
+	int counter = 0;
 
 private:
 	void make_move(int move);

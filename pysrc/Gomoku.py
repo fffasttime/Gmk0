@@ -106,7 +106,7 @@ class Gomoku:
             te=2.5
         else:
             te=1.25
-        #print(counts)
+        print(counts)
         counts = np.power(counts, te)
         counts=counts/counts.sum()
         #ret=np.argmax(counts)

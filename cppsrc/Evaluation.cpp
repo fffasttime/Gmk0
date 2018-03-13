@@ -56,9 +56,16 @@ RawOutput getEvaluation(Board board, int col, NN *network, bool use_transform, i
 		}
 	}
 	auto ret = network->forward(input);
-	RawOutput output;
+	double sum_policy = 0.0;
+	//scale sum_policy to 1
 	for (int i = 0; i<BLSIZE; i++)
-		output.p[i] = ret.first[i];
+		if (board[i]==0)
+			sum_policy += ret.first[i];
+	RawOutput output;
+	if (sum_policy > 1e-10)
+		for (int i = 0; i<BLSIZE; i++)
+			output.p[i] = (float)(ret.first[i] / sum_policy);
+
 	boardTransform(trans + 8, output.p);
 	output.v = ret.second  * 2.0f - 1.0f;
 	return output;

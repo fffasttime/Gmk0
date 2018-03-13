@@ -211,3 +211,225 @@ add command line paras
 add gmk protrol support
 2-10
 add match player
+2-11
+   I0 vs random
+b   43    7
+w   34    13
+77%PASS
+2-12
+fixed bug, restart
+   I0 vs random
+b   42    8
+w   34    16
+76%PASS
+training I1 step=16k, lr=0.05, decay=0.87, mse_factor=2.0
+   I1 vs I0
+b   48    2
+w   46    4
+94%PASS
+2-13
+selfplay I1, puct=1
+training I2 step=16k, lr=0.05, decay=0.89, mse_factor=2.0
+training I2z step=16k, lr=0.05, decay=0.89, mse_factor=1.0
+   I2 vs I1
+b   50    0
+w   47    3
+97%PASS
+I2z vs I2 failed
+
+training I3 step=16k, lr=0.05, decay=0.89, mse_factor=2.0
+training I3z step=16k, lr=0.05, decay=0.89, mse_factor=1.0
+training I3-6000 step=6k, lr=0.05, decay=0.89, mse_factor=2.0
+training I3p step=16k, lr=0.02, decay=0.89, mse_factor=2.0
+training I3d step=16k, lr=0.05, decay=0.92, mse_factor=2.0
+    I3 vs I2
+b   49    1
+w   40    10
+89%PASS
+    I3z vs I3
+b   35    15
+w   15    35
+    I3-6000 vs I3
+b   13    37
+w   4     46
+    I3p vs I3
+b   41    9
+w   12    38
+    I3d vs I3
+b   35    15
+w   14    36
+2-14
+training I4 step=16k, lr=0.03, decay=0.91, mse_factor=1.5
+    I4 vs I3
+b   47    3
+w   21    29
+68% PASS
+training I5 step=16k, lr=0.03, decay=0.92, mse_factor=1.5
+    I5 vs I4
+b   46    4
+w   37    13
+83% PASS
+2-15
+training I6 step=16k, lr=0.03, decay=0.92, mse_factor=1.5
+    I6 vs I5
+b   38    12
+w   27    23
+65% PASS
+training I7 step=16k, lr=0.03, decay=0.93, mse_factor=1.5
+    I7 vs I6
+b   36    14
+w   21    29
+57% PASS
+training I8 step=16k, lr=0.03, decay=0.95, mse_factor=1.5
+    I8 vs I7
+b   39    11
+w   30    20
+69% PASS
+2-16
+training I9 step=16k, lr=0.03, decay=0.95, mse_factor=1.5, bs=192
+    I9 vs I8
+b   33    17
+w   34    16
+67% PASS
+training I10 step=16k, lr=0.03, decay=0.96, mse_factor=1.5, bs=192
+    I10 vs I9
+b   42    8
+w   29.5  20.5
+71.5% PASS
+2-17
+training I11 step=16k, lr=0.03, decay=0.97, mse_factor=1.5, bs=192
+    I11 vs I10
+b   31    19
+w   31.5  18.5
+62.5% PASS
+2-18
+training I12 step=16k, lr=0.03, decay=0.97, mse_factor=1, bs=192
+    I12 vs I11
+b   35    15
+w   36    14
+71% PASS
+training I13 step=16k, lr=0.03, decay=0.975, mse_factor=0.6, bs=192
+    I13 vs I12
+b   37    13
+w   28    22
+62% PASS
+2-19
+training I14_0 step=16k, lr=0.03, decay=0.975, mse_factor=1, bs=192 56%
+training I14_0 step=16k, lr=0.03, decay=0.975, mse_factor=0.6, bs=192 55%
+training I14 step=16k, lr=0.03, decay=0.98, mse_factor=1, bs=192
+    I14 vs I13
+b   35  
+w   26 
+puct:1.3->1.4
+training I15 step=16k, lr=0.03, decay=0.98, mse_factor=0.6, bs=192
+    I15 vs I14
+b   41  
+w   29 
+2-20
+training I16 step=16k, lr=0.03, decay=0.98, mse_factor=0.6, bs=192
+    I16 vs I15
+b   34  
+w   31
+2-21
+training I17 step=16k, lr=0.06, decay=0.97, mse_factor=1, bs=192
+    I17 vs I16
+b   39
+w   23
+training I18 step=16k, lr=0.06, decay=0.97, mse_factor=1, bs=192
+    I18 vs I17
+b   39
+w   24
+2-22
+training I20 step=16k, lr=0.06, decay=0.97, mse_factor=1, bs=192
+    I20 vs I19
+b   41
+w   26.5
+2-23
+changed to 6b64f
+training I21 step=16k, lr=0.05, decay=0.97, mse_factor=1, bs=192
+    I21 vs I20
+b   38
+w   31.5
+    I22 vs I21
+b   36
+w   25
+2-24
+training I23 step=16k, lr=0.05, decay=0.97, mse_factor=0.6, bs=192
+    I23 vs I22
+b   31
+w   26
+    I24 vs I23
+b   41
+w   26
+2-25
+    I25 vs I24
+b   45
+w   16
+2-26
+    I26 vs I25
+b   50
+w   11.5
+    I27 vs I26
+b   41
+w   19
+2-27
+    I28 vs I27
+b   40
+w   18
+training I29t1 step=2k, lr=0.005, decay=0.97, mse_factor=1, bs=128
+2-28
+    I29t1 vs I28
+b   40
+w   26
+training I30 step=4k, lr=0.002, decay=0.98, mse_factor=1, bs=128
+    I30 vs I29t1
+b   41
+w   29
+
+3-1
+    I31 vs I30
+b   41
+w   28
+
+    I32 vs I31
+b   35
+w   23
+3-2
+    I33 vs I32
+b   38
+w   17
+3-3
+training I34s step=2k, lr=0.001, decay=0.98, mse_factor=1, bs=192
+    I34s vs I33
+b   38
+w   20.5
+training I35 step=4k, lr=0.001, decay=0.98, mse_factor=1, bs=128
+    I35 vs I34s
+b   41
+w   14
+
+3-8
+puct changed to 1.6
+training I38s step=2k, lr=0.002, decay=0.98, mse_factor=1, bs=128
+    I38s vs J37t
+b   38
+w   19
+
+training I39s step=2k, lr=0.002, decay=0.98, mse_factor=1, bs=192
+    I39s vs I38s
+b   36
+w   17
+
+3-9
+add mc_win output
+current target_Q: z^decay
+new target_Q(test): alpha * z^dacay + (1-alpha)*(mc_win^mc_decay)
+alpha 0.6
+decay first_z 0.4
+mcdecay 0.75
+tau1 0.8 tau2 0.6
+
+training I40f step=2k, lr=0.002, decay=0.98, mse_factor=1, bs=128
+    I40s vs I39s
+b   38
+w   16
